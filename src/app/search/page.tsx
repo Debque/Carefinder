@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Map, List, Search as SearchIcon } from 'lucide-react'
@@ -22,7 +23,7 @@ const DEFAULT_FILTERS: SearchFilters = {
   sortBy: 'distance',
 }
 
-export default function SearchPage() {
+function SearchPage() {
   const searchParams = useSearchParams()
   const [view, setView] = useState<'list' | 'map'>('list')
   const [hospitals, setHospitals] = useState<Hospital[]>([])
@@ -211,5 +212,25 @@ export default function SearchPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SearchPageWrapper() {
+  return (
+    <Suspense
+      fallback={
+        <div
+          className="min-h-screen flex items-center justify-center"
+          style={{ background: 'var(--bg)' }}
+        >
+          <div className="text-center">
+            <div className="skeleton w-32 h-4 rounded mx-auto mb-3" />
+            <p style={{ color: 'var(--fg-muted)' }}>Loading search...</p>
+          </div>
+        </div>
+      }
+    >
+      <SearchPage />
+    </Suspense>
   )
 }
