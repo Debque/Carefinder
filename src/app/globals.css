@@ -1,26 +1,210 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+
+@import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --accent: #5b50f0;
+  --accent-light: #7b72f3;
+  --accent-dark: #4338ca;
+  --accent-subtle: #eef0ff;
+
+  --navy: #0d1b2a;
+  --navy-mid: #1a2d42;
+
+  --fg: #0d1b2a;
+  --fg-muted: #4b5563;
+  --fg-subtle: #9ca3af;
+  --border: #e5e7eb;
+  --border-strong: #d1d5db;
+  --bg: #ffffff;
+  --bg-soft: #f8fafc;
+  --bg-card: #ffffff;
+
+  --green: #10b981;
+  --red: #ef4444;
+
+  --shadow-sm: 0 1px 3px rgba(13, 27, 42, 0.08);
+  --shadow-md: 0 4px 16px rgba(13, 27, 42, 0.1);
+  --shadow-lg: 0 12px 40px rgba(13, 27, 42, 0.14);
+  --shadow-accent: 0 4px 20px rgba(91, 80, 240, 0.3);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  --fg: #f0f4f8;
+  --fg-muted: #94a3b8;
+  --fg-subtle: #64748b;
+  --border: #1e3a5f;
+  --border-strong: #2d4f73;
+  --bg: #0a1628;
+  --bg-soft: #0d1b2a;
+  --bg-card: #111f33;
+  --accent-subtle: #1e2a4a;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background 0.3s,
+    color 0.3s;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Sora', sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white text-sm font-semibold transition-all duration-200;
+    background: var(--accent);
+    box-shadow: var(--shadow-accent);
+  }
+  .btn-primary:hover {
+    background: var(--accent-light);
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 border;
+    color: var(--accent);
+    border-color: var(--accent);
+    background: transparent;
+  }
+  .btn-secondary:hover {
+    background: var(--accent-subtle);
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150;
+    color: var(--fg-muted);
+  }
+  .btn-ghost:hover {
+    background: var(--bg-soft);
+    color: var(--fg);
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    transition:
+      box-shadow 0.2s,
+      transform 0.2s;
+  }
+  .card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+
+  .input-base {
+    @apply w-full px-3.5 py-2.5 text-sm rounded-lg border transition-all duration-150 outline-none;
+    background: var(--bg);
+    border-color: var(--border-strong);
+    color: var(--fg);
+  }
+  .input-base::placeholder {
+    color: var(--fg-subtle);
+  }
+  .input-base:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(91, 80, 240, 0.12);
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  }
+  .badge-public {
+    background: #dcfce7;
+    color: #166534;
+  }
+  .badge-private {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  .badge-accent {
+    background: var(--accent-subtle);
+    color: var(--accent);
+  }
+
+  .section-label {
+    @apply text-xs font-semibold uppercase tracking-widest;
+    color: var(--fg-subtle);
+  }
+
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--border) 25%,
+      var(--bg-soft) 50%,
+      var(--border) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeUp {
+  animation: fadeUp 0.5s ease both;
+}
+.delay-100 {
+  animation-delay: 0.1s;
+}
+.delay-200 {
+  animation-delay: 0.2s;
+}
+.delay-300 {
+  animation-delay: 0.3s;
 }
