@@ -150,7 +150,7 @@ function SearchPage() {
 
               <div className="flex items-center gap-2">
                 <ExportButton hospitals={hospitals} query={filters.query} />
-                <ShareButton filters={filters} />
+                <ShareButton filters={filters} hospitals={hospitals} />
               </div>
             </div>
 
@@ -204,7 +204,7 @@ function SearchPage() {
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-3">
             <ExportButton hospitals={hospitals} query={filters.query} />
-            <ShareButton filters={filters} />
+            <ShareButton filters={filters} hospitals={hospitals} />
           </div>
           <p className="text-xs" style={{ color: 'var(--fg-subtle)' }}>
             {hospitals.length} results · Carefinder Nigeria
