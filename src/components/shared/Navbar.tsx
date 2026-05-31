@@ -82,6 +82,14 @@ export function Navbar() {
             </Link>
           ))}
           <Link
+            href="/login"
+            className="btn-ghost border rounded-full px-4 py-2 text-sm font-semibold hidden md:inline-flex"
+            style={{ borderColor: 'var(--border)' }}
+          >
+            Log in
+          </Link>
+
+          <Link
             href="/search"
             className="btn-primary mt-2 justify-center"
             onClick={() => setMobileOpen(false)}
