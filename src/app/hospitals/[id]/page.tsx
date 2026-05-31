@@ -13,6 +13,7 @@ import {
 import { Navbar } from '@/components/shared/Navbar'
 import { StarRating } from '@/components/shared/StarRating'
 import { getHospitalById } from '@/lib/supabase/queries'
+import { RatingWidget } from '@/components/hospital/RatingWidget'
 
 export const revalidate = 60
 
@@ -301,17 +302,9 @@ export default async function HospitalDetailPage({ params }: Props) {
           </div>
         </div>
 
-        <div
-          className="mt-5 rounded-2xl border p-5 animate-fadeUp delay-300"
-          style={{
-            background: 'var(--bg-card)',
-            borderColor: 'var(--border)',
-          }}
-        >
-          <p className="section-label mb-4">Reviews</p>
-          <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>
-            Ratings & Reviews coming in Phase 4.
-          </p>
+        {/* Reviews section */}
+        <div className="mt-5 animate-fadeUp delay-300">
+          <RatingWidget hospitalId={hospital.id} />
         </div>
       </div>
     </div>
