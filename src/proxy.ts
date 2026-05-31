@@ -2,15 +2,13 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Only protect /admin routes
   if (!pathname.startsWith('/admin')) {
     return NextResponse.next()
   }
 
-  // Allow login page through
   if (pathname === '/admin/login') {
     return NextResponse.next()
   }
@@ -39,7 +37,6 @@ export async function middleware(request: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession()
 
-  // No session — redirect to login
   if (!session) {
     const loginUrl = new URL('/admin/login', request.url)
     loginUrl.searchParams.set('redirected', 'true')
