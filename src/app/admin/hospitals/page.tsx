@@ -20,23 +20,6 @@ export default function AdminHospitalsPage() {
   const [search, setSearch] = useState('')
   const [deleting, setDeleting] = useState<string | null>(null)
 
-  const fetchHospitals = async () => {
-    setLoading(true)
-    const supabase = getClient()
-    let query = supabase
-      .from('hospitals')
-      .select('*')
-      .order('created_at', { ascending: false })
-
-    if (search) {
-      query = query.ilike('name', `%${search}%`)
-    }
-
-    const { data } = await query
-    setHospitals((data ?? []) as Hospital[])
-    setLoading(false)
-  }
-
   useEffect(() => {
     const run = async () => {
       setLoading(true)
@@ -72,7 +55,6 @@ export default function AdminHospitalsPage() {
 
       <main className="flex-1 p-6 sm:p-8">
         <div className="max-w-5xl mx-auto">
-          {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1
@@ -94,7 +76,6 @@ export default function AdminHospitalsPage() {
             </Link>
           </div>
 
-          {/* Search */}
           <div className="relative mb-5">
             <Search
               size={16}
@@ -110,7 +91,6 @@ export default function AdminHospitalsPage() {
             />
           </div>
 
-          {/* Table */}
           <div
             className="rounded-2xl border overflow-hidden"
             style={{ borderColor: 'var(--border)' }}
