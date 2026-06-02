@@ -54,7 +54,9 @@ export default function LoginPage() {
         return
       }
 
-      router.push('/search')
+      const params = new URLSearchParams(window.location.search)
+      const redirect = params.get('redirect') ?? '/search'
+      router.push(redirect)
     } else {
       const { error: authError } = await supabase.auth.signUp({
         email,

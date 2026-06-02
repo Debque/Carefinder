@@ -38,8 +38,7 @@ export function RatingWidget({ hospitalId, onSubmit }: RatingWidgetProps) {
     } = await supabase.auth.getUser()
 
     if (!user) {
-      setError('Please log in to leave a review')
-      setSubmitting(false)
+      window.location.href = '/login?redirect=' + window.location.pathname
       return
     }
 
