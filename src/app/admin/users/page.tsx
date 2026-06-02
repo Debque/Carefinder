@@ -4,11 +4,10 @@ import { useEffect, useState } from 'react'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { createClient } from '@supabase/supabase-js'
 
-interface User {
-  id: string
-  email: string
-  created_at: string
-  last_sign_in_at: string | null
+interface ReviewUser {
+  user_id: string
+  count: number
+  latest: string
 }
 
 function getClient() {
@@ -19,18 +18,38 @@ function getClient() {
 }
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<ReviewUser[]>([])
   const [loading, setLoading] = useState(true)
+  const [totalReviews, setTotalReviews] = useState(0)
 
   useEffect(() => {
     const run = async () => {
       setLoading(true)
       const supabase = getClient()
-      const { data } = await supabase
-        .from('profiles')
-        .select('*')
+
+      const { data, count } = await supabase
+        .from('reviews')
+        .select('user_id, created_at', { count: 'exact' })
         .order('created_at', { ascending: false })
-      setUsers((data ?? []) as User[])
+
+      setTotalReviews(count ?? 0)
+
+      // Group by user_id
+      const grouped: Record<string, { count: number; latest: string }> = {}
+      for (const row of data ?? []) {
+        if (!grouped[row.user_id]) {
+          grouped[row.user_id] = { count: 0, latest: row.created_at }
+        }
+        grouped[row.user_id].count++
+      }
+
+      setUsers(
+        Object.entries(grouped).map(([user_id, val]) => ({
+          user_id,
+          count: val.count,
+          latest: val.latest,
+        }))
+      )
       setLoading(false)
     }
     run()
@@ -49,7 +68,7 @@ export default function AdminUsersPage() {
               Users
             </h1>
             <p className="text-sm mt-0.5" style={{ color: 'var(--fg-muted)' }}>
-              Registered users who have left reviews
+              {users.length} users · {totalReviews} total reviews
             </p>
           </div>
 
@@ -60,7 +79,7 @@ export default function AdminUsersPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr style={{ background: 'var(--bg-soft)' }}>
-                  {['Email', 'Joined', 'Last Sign In'].map((h) => (
+                  {['User ID', 'Reviews', 'Latest Activity'].map((h) => (
                     <th
                       key={h}
                       className="text-left px-4 py-3 text-xs font-semibold"
@@ -92,31 +111,32 @@ export default function AdminUsersPage() {
                       className="px-4 py-12 text-center"
                       style={{ color: 'var(--fg-muted)' }}
                     >
-                      No users yet
+                      No users have left reviews yet
                     </td>
                   </tr>
                 ) : (
                   users.map((user) => (
                     <tr
-                      key={user.id}
+                      key={user.user_id}
                       style={{ borderTop: '1px solid var(--border)' }}
                     >
-                      <td className="px-4 py-3" style={{ color: 'var(--fg)' }}>
-                        {user.email}
+                      <td
+                        className="px-4 py-3 font-mono text-xs"
+                        style={{ color: 'var(--fg)' }}
+                      >
+                        {user.user_id.slice(0, 16)}...
                       </td>
                       <td
                         className="px-4 py-3"
                         style={{ color: 'var(--fg-muted)' }}
                       >
-                        {new Date(user.created_at).toLocaleDateString()}
+                        {user.count} review{user.count !== 1 ? 's' : ''}
                       </td>
                       <td
                         className="px-4 py-3"
                         style={{ color: 'var(--fg-muted)' }}
                       >
-                        {user.last_sign_in_at
-                          ? new Date(user.last_sign_in_at).toLocaleDateString()
-                          : '—'}
+                        {new Date(user.latest).toLocaleDateString()}
                       </td>
                     </tr>
                   ))
