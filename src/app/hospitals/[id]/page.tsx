@@ -303,7 +303,22 @@ export default async function HospitalDetailPage({ params }: Props) {
         </div>
 
         {/* Reviews section */}
-        <div className="mt-5 animate-fadeUp delay-300">
+        <div
+          className="mt-5 rounded-2xl border p-5 animate-fadeUp delay-300"
+          style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}
+        >
+          <p className="section-label mb-4">Reviews</p>
+          <p className="text-sm mb-4" style={{ color: 'var(--fg-muted)' }}>
+            Share your experience to help others find quality care.{' '}
+            <a href="/login" style={{ color: 'var(--accent)' }}>
+              Log in
+            </a>{' '}
+            or{' '}
+            <a href="/login" style={{ color: 'var(--accent)' }}>
+              create an account
+            </a>{' '}
+            to leave a review.
+          </p>
           <RatingWidget hospitalId={hospital.id} />
         </div>
       </div>
