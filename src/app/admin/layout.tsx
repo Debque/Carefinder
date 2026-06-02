@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { ThemeToggle } from '@/components/shared/ThemeToggle'
 
 export const metadata: Metadata = {
   title: 'Admin — Carefinder',
@@ -12,6 +13,10 @@ export default function AdminLayout({
 }) {
   return (
     <div style={{ background: 'var(--bg-soft)', minHeight: '100vh' }}>
+      {/* Admin theme toggle */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
       {children}
     </div>
   )
