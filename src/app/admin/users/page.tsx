@@ -2,19 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
-import { createClient } from '@supabase/supabase-js'
+import { getBrowserClient } from '@/lib/supabase/browser'
 
 interface ReviewUser {
   user_id: string
   count: number
   latest: string
-}
-
-function getClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
 }
 
 export default function AdminUsersPage() {
@@ -25,18 +18,23 @@ export default function AdminUsersPage() {
   useEffect(() => {
     const run = async () => {
       setLoading(true)
-      const supabase = getClient()
+      const supabase = getBrowserClient()
 
-      const { data, count } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any
+
+      const { data, count } = await db
         .from('reviews')
         .select('user_id, created_at', { count: 'exact' })
         .order('created_at', { ascending: false })
 
       setTotalReviews(count ?? 0)
 
-      // Group by user_id
       const grouped: Record<string, { count: number; latest: string }> = {}
-      for (const row of data ?? []) {
+      for (const row of (data ?? []) as {
+        user_id: string
+        created_at: string
+      }[]) {
         if (!grouped[row.user_id]) {
           grouped[row.user_id] = { count: 0, latest: row.created_at }
         }
