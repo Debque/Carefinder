@@ -11,7 +11,7 @@ import { createClient } from '@supabase/supabase-js'
 const navLinks = [
   { href: '/search', label: 'Search' },
   { href: '/search?view=hospitals', label: 'Hospitals' },
-  { href: '/about', label: 'About' },
+  { href: '/#about', label: 'About' },
 ]
 
 export function Navbar() {
