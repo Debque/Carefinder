@@ -1,14 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
-
-function getClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
+import { getBrowserClient } from '@/lib/supabase/browser'
 
 interface RatingWidgetProps {
   hospitalId: string
@@ -32,32 +25,43 @@ export function RatingWidget({ hospitalId, onSubmit }: RatingWidgetProps) {
     setSubmitting(true)
     setError('')
 
-    const supabase = getClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    try {
+      const supabase = getBrowserClient()
 
-    if (!user) {
-      window.location.href = '/login?redirect=' + window.location.pathname
-      return
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (!session?.user) {
+        window.location.href = '/login?redirect=' + window.location.pathname
+        return
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any
+
+      const { error: submitError } = await db.from('reviews').insert({
+        hospital_id: hospitalId,
+        user_id: session.user.id,
+        rating: selected,
+        content: content || null,
+        status: 'pending',
+      })
+
+      if (submitError) {
+        console.error('Review error:', submitError)
+        setError(submitError.message)
+        setSubmitting(false)
+        return
+      }
+
+      setSubmitted(true)
+      onSubmit?.(selected)
+    } catch (err) {
+      console.error('Caught error:', err)
+      setError('Failed to submit. Please try again.')
     }
 
-    const { error: submitError } = await supabase.from('reviews').insert({
-      hospital_id: hospitalId,
-      user_id: user.id,
-      rating: selected,
-      content: content || null,
-      status: 'pending',
-    })
-
-    if (submitError) {
-      setError('Failed to submit review. Please try again.')
-      setSubmitting(false)
-      return
-    }
-
-    setSubmitted(true)
-    onSubmit?.(selected)
     setSubmitting(false)
   }
 
@@ -85,7 +89,6 @@ export function RatingWidget({ hospitalId, onSubmit }: RatingWidgetProps) {
     >
       <p className="section-label mb-4">Leave a Review</p>
 
-      {/* Star selector */}
       <div className="flex items-center gap-1 mb-4">
         {[1, 2, 3, 4, 5].map((star) => (
           <button
@@ -115,12 +118,11 @@ export function RatingWidget({ hospitalId, onSubmit }: RatingWidgetProps) {
         )}
       </div>
 
-      {/* Review text */}
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder="Share your experience (optional)..."
-        className="input-base resize-none mb-3"
+        className="input-base resize-none mb-1"
         rows={3}
         maxLength={500}
       />
