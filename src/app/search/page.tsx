@@ -13,6 +13,29 @@ import { ShareButton } from '@/components/shared/ShareButton'
 import { searchHospitals } from '@/lib/supabase/queries'
 import { decodeFilters } from '@/lib/share'
 import type { Hospital, SearchFilters } from '@/types'
+import dynamic from 'next/dynamic'
+
+const MapView = dynamic(
+  () =>
+    import('@/components/hospital/HospitalMap').then((m) => ({
+      default: m.HospitalMap,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="rounded-2xl border flex items-center justify-center"
+        style={{
+          height: 480,
+          borderColor: 'var(--border)',
+          background: 'var(--bg-soft)',
+        }}
+      >
+        <p style={{ color: 'var(--fg-muted)' }}>Loading map...</p>
+      </div>
+    ),
+  }
+)
 
 const DEFAULT_FILTERS: SearchFilters = {
   query: '',
@@ -41,6 +64,7 @@ function SearchPage() {
   const runSearch = useCallback(async () => {
     setLoading(true)
     const results = await searchHospitals(filters)
+    console.log('First hospital:', JSON.stringify(results[0]))
     setHospitals(results)
     setLoading(false)
   }, [filters])
@@ -166,27 +190,14 @@ function SearchPage() {
                 total={hospitals.length}
               />
             ) : (
-              <div
-                className="rounded-2xl border flex items-center justify-center"
-                style={{
-                  height: 480,
-                  borderColor: 'var(--border)',
-                  background: 'var(--bg-soft)',
-                }}
-              >
-                <div className="text-center">
-                  <div className="text-4xl mb-3">🗺️</div>
-                  <p className="font-medium" style={{ color: 'var(--fg)' }}>
-                    Interactive Map
-                  </p>
-                  <p
-                    className="text-sm mt-1"
-                    style={{ color: 'var(--fg-muted)' }}
-                  >
-                    Mapbox integration added in the Map step
-                  </p>
-                </div>
-              </div>
+              <MapView
+                hospitals={hospitals}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+                radiusKm={filters.radius}
+                userLat={filters.lat}
+                userLng={filters.lng}
+              />
             )}
           </div>
         </div>

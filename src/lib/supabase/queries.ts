@@ -14,8 +14,8 @@ export async function searchHospitals(
   const supabase = getClient()
 
   let query = supabase
-    .from('hospitals')
-    .select('*, images:hospital_images(id, url, alt)')
+    .from('hospitals_with_coords')
+    .select(`*, images:hospital_images(id, url, alt)`)
 
   if (filters.query) {
     query = query.or(
@@ -53,8 +53,8 @@ export async function getHospitalById(id: string): Promise<Hospital | null> {
   const supabase = getClient()
 
   const { data, error } = await supabase
-    .from('hospitals')
-    .select('*, images:hospital_images(id, url, alt)')
+    .from('hospitals_with_coords')
+    .select(`*, images:hospital_images(id, url, alt)`)
     .eq('id', id)
     .single()
 
