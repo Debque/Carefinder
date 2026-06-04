@@ -21,8 +21,9 @@ export default function LandingPage() {
       <header
         className="sticky top-0 z-50 border-b"
         style={{
-          background: 'rgba(255,255,255,0.92)',
+          background: 'var(--navbar-bg)',
           backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           borderColor: 'var(--border)',
         }}
       >
@@ -49,9 +50,10 @@ export default function LandingPage() {
             </div>
             <span
               className="text-lg font-bold"
-              style={{ fontFamily: 'Sora, sans-serif', color: 'var(--fg)' }}
+              style={{ fontFamily: 'Sora, sans-serif', lineHeight: 1 }}
             >
-              Carefinder
+              <span style={{ color: 'var(--fg)' }}>Care</span>
+              <span style={{ color: 'var(--accent)' }}>finder</span>
             </span>
           </div>
 
