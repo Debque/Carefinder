@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
   const iconSize = size === 'sm' ? 28 : size === 'lg' ? 44 : 36
@@ -11,35 +12,14 @@ export function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
       className="flex items-center gap-2.5 group"
       aria-label="Carefinder home"
     >
-      <div
-        className="flex items-center justify-center rounded-xl transition-transform duration-200 group-hover:scale-105"
-        style={{
-          width: iconSize,
-          height: iconSize,
-          background: 'var(--accent)',
-          boxShadow: '0 2px 12px rgba(91,80,240,0.35)',
-          flexShrink: 0,
-        }}
-      >
-        <svg
-          width={iconSize * 0.6}
-          height={iconSize * 0.6}
-          viewBox="0 0 24 24"
-          fill="none"
-        >
-          <path
-            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
-            fill="white"
-            fillOpacity={0.25}
-            stroke="white"
-            strokeWidth="1.5"
-          />
-          <path
-            d="M9.5 8.5C9.5 7.67 10.17 7 11 7c.44 0 .84.18 1.13.47L12 7.33l-.13.14A1.5 1.5 0 0 1 13 7c.83 0 1.5.67 1.5 1.5 0 1.66-2.5 3.5-2.5 3.5S9.5 10.16 9.5 8.5z"
-            fill="white"
-          />
-        </svg>
-      </div>
+      <Image
+        src="/favicon-32x32.png"
+        alt="Carefinder logo"
+        width={iconSize}
+        height={iconSize}
+        style={{ borderRadius: 8, flexShrink: 0 }}
+        className="transition-transform duration-200 group-hover:scale-105"
+      />
 
       <div className="flex flex-col leading-none">
         <span

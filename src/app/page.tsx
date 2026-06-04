@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   Search,
   Share2,
@@ -41,29 +42,14 @@ export default async function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center gap-2.5">
-            <div
-              className="flex items-center justify-center rounded-xl"
-              style={{
-                width: 32,
-                height: 32,
-                background: 'var(--accent)',
-                flexShrink: 0,
-              }}
-            >
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
-                  fill="white"
-                  fillOpacity={0.25}
-                  stroke="white"
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="M9.5 8.5C9.5 7.67 10.17 7 11 7c.44 0 .84.18 1.13.47L12 7.33l-.13.14A1.5 1.5 0 0 1 13 7c.83 0 1.5.67 1.5 1.5 0 1.66-2.5 3.5-2.5 3.5S9.5 10.16 9.5 8.5z"
-                  fill="white"
-                />
-              </svg>
-            </div>
+            <Image
+              src="/favicon-32x32.png"
+              alt="Carefinder logo"
+              width={32}
+              height={32}
+              style={{ borderRadius: 8, flexShrink: 0 }}
+              priority
+            />
             <span
               className="text-lg font-bold"
               style={{ fontFamily: 'Sora, sans-serif', lineHeight: 1 }}
@@ -194,21 +180,30 @@ export default async function LandingPage() {
             </div>
 
             {/* Stats — live from Supabase */}
-            <div className="flex items-center gap-6 mt-10 flex-wrap">
+            <div className="flex items-stretch gap-0 mt-10 flex-wrap">
               {[
                 { value: `${hospitalCount ?? 0}`, label: 'Hospitals listed' },
                 { value: `${uniqueStates}`, label: 'States covered' },
                 { value: 'Free', label: 'Always free to use' },
-              ].map((s) => (
-                <div key={s.label}>
+              ].map((s, i) => (
+                <div
+                  key={s.label}
+                  className="flex flex-col justify-center"
+                  style={{
+                    paddingRight: '2rem',
+                    paddingLeft: i === 0 ? 0 : '2rem',
+                    borderLeft:
+                      i > 0 ? '1px solid rgba(255,255,255,0.12)' : 'none',
+                  }}
+                >
                   <p
-                    className="text-2xl font-bold text-white"
+                    className="text-2xl font-bold text-white tabular-nums"
                     style={{ fontFamily: 'Sora, sans-serif' }}
                   >
                     {s.value}
                   </p>
                   <p
-                    className="text-xs"
+                    className="text-xs mt-0.5"
                     style={{ color: 'rgba(255,255,255,0.5)' }}
                   >
                     {s.label}
@@ -338,29 +333,13 @@ export default async function LandingPage() {
       >
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <div
-              className="flex items-center justify-center rounded-lg"
-              style={{
-                width: 28,
-                height: 28,
-                background: 'var(--accent)',
-                flexShrink: 0,
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
-                  fill="white"
-                  fillOpacity={0.25}
-                  stroke="white"
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="M9.5 8.5C9.5 7.67 10.17 7 11 7c.44 0 .84.18 1.13.47L12 7.33l-.13.14A1.5 1.5 0 0 1 13 7c.83 0 1.5.67 1.5 1.5 0 1.66-2.5 3.5-2.5 3.5S9.5 10.16 9.5 8.5z"
-                  fill="white"
-                />
-              </svg>
-            </div>
+            <Image
+              src="/favicon-32x32.png"
+              alt="Carefinder logo"
+              width={28}
+              height={28}
+              style={{ borderRadius: 6, flexShrink: 0 }}
+            />
             <span
               className="text-sm font-bold"
               style={{ fontFamily: 'Sora, sans-serif' }}
