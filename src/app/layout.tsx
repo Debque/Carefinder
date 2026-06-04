@@ -6,6 +6,10 @@ export const metadata: Metadata = {
   title: "Carefinder — Nigeria's Hospital Directory",
   description:
     'Find, export, and share trusted hospital information across Nigeria.',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
 }
 
 export default function RootLayout({
@@ -22,6 +26,8 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
       <body>
         <a href="#main-content" className="skip-link">
