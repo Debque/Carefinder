@@ -77,7 +77,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <Link
-              href="/admin/login"
+              href="/login"
               className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border transition-all"
               style={{
                 borderColor: 'var(--border)',

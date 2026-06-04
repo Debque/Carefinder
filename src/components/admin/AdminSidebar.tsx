@@ -9,6 +9,7 @@ import {
   Users,
   Settings,
   LogOut,
+  Globe,
 } from 'lucide-react'
 import { createClient } from '@supabase/supabase-js'
 
@@ -18,6 +19,7 @@ const navItems = [
   { href: '/admin/reviews', label: 'Reviews', icon: Star },
   { href: '/admin/users', label: 'Users', icon: Users },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
+  { href: '/', label: 'View Site', icon: Globe },
 ]
 
 export function AdminSidebar() {
@@ -30,7 +32,7 @@ export function AdminSidebar() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
     await supabase.auth.signOut()
-    router.push('/admin/login')
+    router.push('/')
   }
 
   return (

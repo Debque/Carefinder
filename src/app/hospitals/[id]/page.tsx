@@ -303,6 +303,7 @@ export default async function HospitalDetailPage({ params }: Props) {
         </div>
 
         {/* Reviews section */}
+        {/* Reviews section */}
         <div className="mt-5 animate-fadeUp delay-300">
           <RatingWidget hospitalId={hospital.id} />
         </div>

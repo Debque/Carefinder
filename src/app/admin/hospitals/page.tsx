@@ -4,15 +4,8 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Plus, Pencil, Trash2, Search } from 'lucide-react'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
-import { createClient } from '@supabase/supabase-js'
+import { getBrowserClient } from '@/lib/supabase/browser'
 import type { Hospital } from '@/types'
-
-function getClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
 
 export default function AdminHospitalsPage() {
   const [hospitals, setHospitals] = useState<Hospital[]>([])
@@ -23,7 +16,7 @@ export default function AdminHospitalsPage() {
   useEffect(() => {
     const run = async () => {
       setLoading(true)
-      const supabase = getClient()
+      const supabase = getBrowserClient()
       let query = supabase
         .from('hospitals')
         .select('*')
@@ -43,7 +36,7 @@ export default function AdminHospitalsPage() {
   const handleDelete = async (id: string, name: string) => {
     if (!confirm(`Delete "${name}"? This cannot be undone.`)) return
     setDeleting(id)
-    const supabase = getClient()
+    const supabase = getBrowserClient()
     await supabase.from('hospitals').delete().eq('id', id)
     setHospitals((prev) => prev.filter((h) => h.id !== id))
     setDeleting(null)

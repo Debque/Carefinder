@@ -27,7 +27,7 @@ export function HospitalCard({
       }}
       role="button"
       tabIndex={0}
-      aria-selected={isSelected}
+      aria-pressed={isSelected}
       onKeyDown={(e) => e.key === 'Enter' && onClick?.()}
     >
       {/* Thumbnail */}

@@ -1,21 +1,14 @@
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { getBrowserClient } from './browser'
 import type { Hospital, SearchFilters } from '@/types'
-
-function getClient() {
-  return createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
 
 export async function searchHospitals(
   filters: Partial<SearchFilters>
 ): Promise<Hospital[]> {
-  const supabase = getClient()
+  const supabase = getBrowserClient()
 
   let query = supabase
-    .from('hospitals')
-    .select('*, images:hospital_images(id, url, alt)')
+    .from('hospitals_with_coords')
+    .select(`*, images:hospital_images(id, url, alt)`)
 
   if (filters.query) {
     query = query.or(
@@ -50,11 +43,11 @@ export async function searchHospitals(
 }
 
 export async function getHospitalById(id: string): Promise<Hospital | null> {
-  const supabase = getClient()
+  const supabase = getBrowserClient()
 
   const { data, error } = await supabase
-    .from('hospitals')
-    .select('*, images:hospital_images(id, url, alt)')
+    .from('hospitals_with_coords')
+    .select(`*, images:hospital_images(id, url, alt)`)
     .eq('id', id)
     .single()
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
-import { createClient } from '@supabase/supabase-js'
+import { getBrowserClient } from '@/lib/supabase/browser'
 import { Check, EyeOff } from 'lucide-react'
 import { StarRating } from '@/components/shared/StarRating'
 
@@ -16,13 +16,6 @@ interface Review {
   hospitals: { name: string } | null
 }
 
-function getClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
-
 export default function AdminReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
@@ -33,8 +26,10 @@ export default function AdminReviewsPage() {
   useEffect(() => {
     const run = async () => {
       setLoading(true)
-      const supabase = getClient()
-      const { data } = await supabase
+      const supabase = getBrowserClient()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any
+      const { data } = await db
         .from('reviews')
         .select('*, hospitals(name)')
         .eq('status', filter)
@@ -46,8 +41,10 @@ export default function AdminReviewsPage() {
   }, [filter])
 
   const moderate = async (id: string, status: 'approved' | 'hidden') => {
-    const supabase = getClient()
-    await supabase.from('reviews').update({ status }).eq('id', id)
+    const supabase = getBrowserClient()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = supabase as any
+    await db.from('reviews').update({ status }).eq('id', id)
     setReviews((prev) => prev.filter((r) => r.id !== id))
   }
 
@@ -99,7 +96,10 @@ export default function AdminReviewsPage() {
           ) : reviews.length === 0 ? (
             <div
               className="text-center py-12 rounded-2xl border"
-              style={{ borderColor: 'var(--border)', color: 'var(--fg-muted)' }}
+              style={{
+                borderColor: 'var(--border)',
+                color: 'var(--fg-muted)',
+              }}
             >
               <p className="font-medium">No {filter} reviews</p>
             </div>
@@ -146,7 +146,10 @@ export default function AdminReviewsPage() {
                         <button
                           onClick={() => moderate(review.id, 'approved')}
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
-                          style={{ background: '#DCFCE7', color: '#166534' }}
+                          style={{
+                            background: '#DCFCE7',
+                            color: '#166534',
+                          }}
                           aria-label="Approve review"
                         >
                           <Check size={12} />
@@ -155,7 +158,10 @@ export default function AdminReviewsPage() {
                         <button
                           onClick={() => moderate(review.id, 'hidden')}
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
-                          style={{ background: '#FEE2E2', color: '#DC2626' }}
+                          style={{
+                            background: '#FEE2E2',
+                            color: '#DC2626',
+                          }}
                           aria-label="Hide review"
                         >
                           <EyeOff size={12} />
