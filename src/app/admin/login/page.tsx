@@ -3,14 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff, LogIn } from 'lucide-react'
-import { createClient } from '@supabase/supabase-js'
-
-function getClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
+import { getBrowserClient } from '@/lib/supabase/browser'
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -31,19 +24,33 @@ export default function AdminLoginPage() {
     setLoading(true)
     setError('')
 
-    const supabase = getClient()
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    try {
+      const supabase = getBrowserClient()
+      console.log('Attempting login...')
 
-    if (authError) {
-      setError('Invalid email or password')
+      const { data, error: authError } = await supabase.auth.signInWithPassword(
+        {
+          email,
+          password,
+        }
+      )
+
+      console.log('Auth result:', { user: data?.user?.email, error: authError })
+
+      if (authError) {
+        console.log('Auth error:', authError.message)
+        setError('Invalid email or password')
+        setLoading(false)
+        return
+      }
+
+      console.log('Login successful, redirecting to dashboard...')
+      window.location.href = '/admin/dashboard'
+    } catch (err) {
+      console.log('Caught error:', err)
+      setError('Something went wrong. Please try again.')
       setLoading(false)
-      return
     }
-
-    router.push('/admin/dashboard')
   }
 
   return (

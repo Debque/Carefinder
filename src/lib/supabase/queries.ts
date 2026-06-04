@@ -1,17 +1,10 @@
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { getBrowserClient } from './browser'
 import type { Hospital, SearchFilters } from '@/types'
-
-function getClient() {
-  return createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
 
 export async function searchHospitals(
   filters: Partial<SearchFilters>
 ): Promise<Hospital[]> {
-  const supabase = getClient()
+  const supabase = getBrowserClient()
 
   let query = supabase
     .from('hospitals_with_coords')
@@ -50,7 +43,7 @@ export async function searchHospitals(
 }
 
 export async function getHospitalById(id: string): Promise<Hospital | null> {
-  const supabase = getClient()
+  const supabase = getBrowserClient()
 
   const { data, error } = await supabase
     .from('hospitals_with_coords')

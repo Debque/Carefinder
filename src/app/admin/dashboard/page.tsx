@@ -4,14 +4,7 @@ import { useEffect, useState } from 'react'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import Link from 'next/link'
 import { Hospital, Star, Plus, ArrowRight } from 'lucide-react'
-import { createClient } from '@supabase/supabase-js'
-
-function getClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
+import { getBrowserClient } from '@/lib/supabase/browser'
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState({
@@ -24,7 +17,7 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     const run = async () => {
-      const supabase = getClient()
+      const supabase = getBrowserClient()
 
       const [hospitals, pending, approved, total] = await Promise.all([
         supabase.from('hospitals').select('*', { count: 'exact', head: true }),

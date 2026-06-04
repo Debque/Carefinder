@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { HospitalSchema, type HospitalFormData } from '@/lib/schemas'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@supabase/supabase-js'
+import { getBrowserClient } from '@/lib/supabase/browser'
 import { Save, X } from 'lucide-react'
 
 const SPECIALTIES = [
@@ -67,13 +67,6 @@ interface AdminEntryFormProps {
   hospitalId?: string
 }
 
-function getClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
-
 export function AdminEntryForm({
   defaultValues,
   hospitalId,
@@ -103,7 +96,7 @@ export function AdminEntryForm({
     setSaving(true)
     setSaveError('')
 
-    const supabase = getClient()
+    const supabase = getBrowserClient()
 
     const payload = {
       name: data.name,
@@ -124,11 +117,11 @@ export function AdminEntryForm({
     if (hospitalId) {
       const result = await supabase
         .from('hospitals')
-        .update(payload)
+        .update(payload as never)
         .eq('id', hospitalId)
       error = result.error
     } else {
-      const result = await supabase.from('hospitals').insert(payload)
+      const result = await supabase.from('hospitals').insert(payload as never)
       error = result.error
     }
 

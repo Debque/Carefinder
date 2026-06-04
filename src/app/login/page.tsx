@@ -4,14 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Eye, EyeOff, LogIn, UserPlus } from 'lucide-react'
-import { createClient } from '@supabase/supabase-js'
-
-function getClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
+import { getBrowserClient } from '@/lib/supabase/browser'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -40,7 +33,7 @@ export default function LoginPage() {
     setError('')
     setSuccess('')
 
-    const supabase = getClient()
+    const supabase = getBrowserClient()
 
     if (mode === 'login') {
       const { error: authError } = await supabase.auth.signInWithPassword({

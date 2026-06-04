@@ -64,7 +64,6 @@ function SearchPage() {
   const runSearch = useCallback(async () => {
     setLoading(true)
     const results = await searchHospitals(filters)
-    console.log('First hospital:', JSON.stringify(results[0]))
     setHospitals(results)
     setLoading(false)
   }, [filters])
