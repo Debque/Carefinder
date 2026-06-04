@@ -10,8 +10,19 @@ import {
   Clock,
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/shared/ThemeToggle'
+import { createClient } from '@/lib/supabase/server'
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const supabase = await createClient()
+
+  const { count: hospitalCount } = await supabase
+    .from('hospitals')
+    .select('*', { count: 'exact', head: true })
+
+  const { data: stateData } = await supabase.from('hospitals').select('state')
+
+  const uniqueStates = new Set(stateData?.map((h) => h.state) ?? []).size
+
   return (
     <div
       className="min-h-screen flex flex-col"
@@ -31,14 +42,19 @@ export default function LandingPage() {
           {/* Logo */}
           <div className="flex items-center gap-2.5">
             <div
-              className="flex items-center justify-center w-8 h-8 rounded-xl"
-              style={{ background: 'var(--accent)' }}
+              className="flex items-center justify-center rounded-xl"
+              style={{
+                width: 32,
+                height: 32,
+                background: 'var(--accent)',
+                flexShrink: 0,
+              }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
                   fill="white"
-                  fillOpacity={0.3}
+                  fillOpacity={0.25}
                   stroke="white"
                   strokeWidth="1.5"
                 />
@@ -177,11 +193,11 @@ export default function LandingPage() {
               </Link>
             </div>
 
-            {/* Stats */}
+            {/* Stats — live from Supabase */}
             <div className="flex items-center gap-6 mt-10 flex-wrap">
               {[
-                { value: '500+', label: 'Hospitals listed' },
-                { value: '36', label: 'States covered' },
+                { value: `${hospitalCount ?? 0}`, label: 'Hospitals listed' },
+                { value: `${uniqueStates}`, label: 'States covered' },
                 { value: 'Free', label: 'Always free to use' },
               ].map((s) => (
                 <div key={s.label}>
@@ -323,16 +339,34 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <div
-              className="w-7 h-7 rounded-lg flex items-center justify-center"
-              style={{ background: 'var(--accent)' }}
+              className="flex items-center justify-center rounded-lg"
+              style={{
+                width: 28,
+                height: 28,
+                background: 'var(--accent)',
+                flexShrink: 0,
+              }}
             >
-              <span className="text-white text-xs">🏥</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
+                  fill="white"
+                  fillOpacity={0.25}
+                  stroke="white"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M9.5 8.5C9.5 7.67 10.17 7 11 7c.44 0 .84.18 1.13.47L12 7.33l-.13.14A1.5 1.5 0 0 1 13 7c.83 0 1.5.67 1.5 1.5 0 1.66-2.5 3.5-2.5 3.5S9.5 10.16 9.5 8.5z"
+                  fill="white"
+                />
+              </svg>
             </div>
             <span
-              className="text-sm font-bold text-white"
+              className="text-sm font-bold"
               style={{ fontFamily: 'Sora, sans-serif' }}
             >
-              Carefinder
+              <span className="text-white">Care</span>
+              <span style={{ color: 'var(--accent-light)' }}>finder</span>
             </span>
           </div>
           <div className="flex items-center gap-5">
