@@ -96,52 +96,98 @@ export function HospitalMap({
 
           if (!lat || !lng || isNaN(lat) || isNaN(lng)) return
 
+          const isSelected = selectedId === hospital.id
+
+          // Plain circle — no rotation so hover never causes it to fly
           const el = document.createElement('div')
           el.style.cssText = `
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  cursor: pointer;
-  background: ${selectedId === hospital.id ? '#16A34A' : '#22C55E'};
-  border: 3px solid white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  transition: all 0.2s;
-`
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            background: ${isSelected ? '#4338CA' : '#5B50F0'};
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
+          `
 
-          el.addEventListener('click', () => onSelect(hospital.id))
-
-          el.addEventListener('mouseenter', () => {
-            el.style.background = '#4338CA'
-            el.style.transform = 'rotate(-45deg) scale(1.2)'
-          })
-
-          el.addEventListener('mouseleave', () => {
-            el.style.background =
-              selectedId === hospital.id ? '#4338CA' : '#5B50F0'
-            el.style.transform = 'rotate(-45deg)'
-          })
-
+          // Popup shown on hover
           const popup = new mapboxgl.Popup({
-            offset: 25,
+            offset: 18,
             closeButton: false,
+            closeOnClick: false,
+            maxWidth: '240px',
           }).setHTML(`
-            <div style="font-family: DM Sans, sans-serif; padding: 4px;">
-              <p style="font-weight: 600; font-size: 13px; margin: 0 0 4px; color: #0D1B2A;">
+            <div style="font-family: 'DM Sans', sans-serif; padding: 10px 12px; min-width: 180px;">
+              <p style="font-weight: 700; font-size: 13px; margin: 0 0 4px; color: #0D1B2A; line-height: 1.3;">
                 ${hospital.name}
               </p>
-              <p style="font-size: 11px; color: #6B7280; margin: 0;">
-                ${hospital.city}, ${hospital.state}
+              <p style="font-size: 11px; color: #6B7280; margin: 0 0 6px;">
+                📍 ${hospital.city}, ${hospital.state}
               </p>
-              <p style="font-size: 11px; color: #6B7280; margin: 4px 0 0; text-transform: capitalize;">
-                ${hospital.ownership}
-              </p>
+              ${
+                hospital.address
+                  ? `<p style="font-size: 11px; color: #6B7280; margin: 0 0 6px;">${hospital.address}</p>`
+                  : ''
+              }
+              <div style="margin-bottom: 6px;">
+                <span style="
+                  font-size: 10px;
+                  font-weight: 600;
+                  padding: 2px 8px;
+                  border-radius: 20px;
+                  background: ${hospital.ownership === 'private' ? '#fef3c7' : '#dcfce7'};
+                  color: ${hospital.ownership === 'private' ? '#92400e' : '#166534'};
+                  text-transform: capitalize;
+                ">${hospital.ownership}</span>
+              </div>
+              ${
+                hospital.specialties?.length
+                  ? `<p style="font-size: 11px; color: #5B50F0; margin: 0 0 4px; font-weight: 500;">
+                      ${hospital.specialties.slice(0, 2).join(' · ')}
+                    </p>`
+                  : ''
+              }
+              ${
+                hospital.rating_avg
+                  ? `<p style="font-size: 12px; color: #F59E0B; margin: 0 0 4px;">
+                      ${'★'.repeat(Math.round(hospital.rating_avg))}${'☆'.repeat(5 - Math.round(hospital.rating_avg))}
+                      <span style="font-size: 11px; color: #6B7280;">
+                        ${hospital.rating_avg.toFixed(1)} (${hospital.review_count ?? 0})
+                      </span>
+                    </p>`
+                  : ''
+              }
+              ${
+                hospital.phone
+                  ? `<p style="font-size: 11px; color: #6B7280; margin: 4px 0 0;">📞 ${hospital.phone}</p>`
+                  : ''
+              }
             </div>
           `)
 
-          new mapboxgl.Marker({ element: el, anchor: 'bottom' })
-            .setLngLat([lng, lat])
-            .setPopup(popup)
-            .addTo(map)
+          // No .setPopup() — hover controls it manually
+          new mapboxgl.Marker({ element: el }).setLngLat([lng, lat]).addTo(map)
+
+          // Hover: scale only, no rotation
+          el.addEventListener('mouseenter', () => {
+            el.style.transform = 'scale(1.3)'
+            el.style.background = '#4338CA'
+            el.style.boxShadow = '0 4px 16px rgba(91,80,240,0.5)'
+            popup.setLngLat([lng, lat]).addTo(map)
+          })
+
+          el.addEventListener('mouseleave', () => {
+            el.style.transform = 'scale(1)'
+            el.style.background = isSelected ? '#4338CA' : '#5B50F0'
+            el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)'
+            popup.remove()
+          })
+
+          // Click selects hospital in the results list
+          el.addEventListener('click', () => {
+            onSelect(hospital.id)
+          })
         })
       })
     }
@@ -156,7 +202,6 @@ export function HospitalMap({
 
   return (
     <div className="flex flex-col gap-2">
-      {/* Map search */}
       <div className="relative">
         <input
           type="text"
@@ -166,7 +211,6 @@ export function HospitalMap({
             if (e.key === 'Enter') {
               const query = (e.target as HTMLInputElement).value
               if (!query || !mapRef.current) return
-              // Use Mapbox geocoding
               fetch(
                 `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
                   query + ', Nigeria'
