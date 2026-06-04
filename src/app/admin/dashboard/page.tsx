@@ -1,8 +1,48 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import Link from 'next/link'
 import { Hospital, Star, Plus, ArrowRight } from 'lucide-react'
+import { getBrowserClient } from '@/lib/supabase/browser'
 
 export default function AdminDashboardPage() {
+  const [stats, setStats] = useState({
+    totalHospitals: 0,
+    pendingReviews: 0,
+    approvedReviews: 0,
+    totalReviews: 0,
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const run = async () => {
+      const supabase = getBrowserClient()
+
+      const [hospitals, pending, approved, total] = await Promise.all([
+        supabase.from('hospitals').select('*', { count: 'exact', head: true }),
+        supabase
+          .from('reviews')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'pending'),
+        supabase
+          .from('reviews')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'approved'),
+        supabase.from('reviews').select('*', { count: 'exact', head: true }),
+      ])
+
+      setStats({
+        totalHospitals: hospitals.count ?? 0,
+        pendingReviews: pending.count ?? 0,
+        approvedReviews: approved.count ?? 0,
+        totalReviews: total.count ?? 0,
+      })
+      setLoading(false)
+    }
+    run()
+  }, [])
+
   return (
     <div className="flex min-h-screen">
       <AdminSidebar />
@@ -36,26 +76,26 @@ export default function AdminDashboardPage() {
             {[
               {
                 label: 'Total Hospitals',
-                value: '—',
+                value: loading ? '...' : stats.totalHospitals,
                 icon: Hospital,
                 color: 'var(--accent)',
               },
               {
                 label: 'Pending Reviews',
-                value: '—',
+                value: loading ? '...' : stats.pendingReviews,
                 icon: Star,
                 color: '#F59E0B',
               },
               {
-                label: 'Published',
-                value: '—',
-                icon: Hospital,
+                label: 'Approved Reviews',
+                value: loading ? '...' : stats.approvedReviews,
+                icon: Star,
                 color: '#10B981',
               },
               {
-                label: 'Draft',
-                value: '—',
-                icon: Hospital,
+                label: 'Total Reviews',
+                value: loading ? '...' : stats.totalReviews,
+                icon: Star,
                 color: 'var(--fg-subtle)',
               },
             ].map((stat) => {
