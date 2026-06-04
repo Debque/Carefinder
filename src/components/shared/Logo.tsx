@@ -18,6 +18,7 @@ export function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
           height: iconSize,
           background: 'var(--accent)',
           boxShadow: '0 2px 12px rgba(91,80,240,0.35)',
+          flexShrink: 0,
         }}
       >
         <svg
@@ -43,9 +44,10 @@ export function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
       <div className="flex flex-col leading-none">
         <span
           className={`${textSize} font-bold tracking-tight`}
-          style={{ fontFamily: 'Sora, sans-serif', color: 'var(--fg)' }}
+          style={{ fontFamily: 'Sora, sans-serif' }}
         >
-          Carefinder
+          <span style={{ color: 'var(--fg)' }}>Care</span>
+          <span style={{ color: 'var(--accent)' }}>finder</span>
         </span>
         {size !== 'sm' && (
           <span className="text-xs" style={{ color: 'var(--fg-subtle)' }}>
