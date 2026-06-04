@@ -40,6 +40,7 @@ export function HospitalMap({
         style: 'mapbox://styles/mapbox/streets-v12',
         center: [centerLng, centerLat],
         zoom: userLat ? 10 : 5.5,
+        maxZoom: 16,
       })
 
       mapRef.current = map
@@ -137,7 +138,7 @@ export function HospitalMap({
             </div>
           `)
 
-          new mapboxgl.Marker(el)
+          new mapboxgl.Marker({ element: el, anchor: 'bottom' })
             .setLngLat([lng, lat])
             .setPopup(popup)
             .addTo(map)
@@ -154,12 +155,49 @@ export function HospitalMap({
   }, [])
 
   return (
-    <div
-      ref={mapContainer}
-      className="rounded-2xl overflow-hidden border"
-      style={{ height: 480, borderColor: 'var(--border)' }}
-      aria-label="Hospital map"
-      role="region"
-    />
+    <div className="flex flex-col gap-2">
+      {/* Map search */}
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Search location on map (e.g. Kano, Abuja)..."
+          className="input-base"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              const query = (e.target as HTMLInputElement).value
+              if (!query || !mapRef.current) return
+              // Use Mapbox geocoding
+              fetch(
+                `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+                  query + ', Nigeria'
+                )}.json?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}&limit=1`
+              )
+                .then((r) => r.json())
+                .then((data) => {
+                  if (data.features?.length > 0) {
+                    const [lng, lat] = data.features[0].center
+                    mapRef.current!.flyTo({
+                      center: [lng, lat],
+                      zoom: 10,
+                      duration: 1500,
+                    })
+                  }
+                })
+            }
+          }}
+        />
+        <p className="text-xs mt-1" style={{ color: 'var(--fg-subtle)' }}>
+          Press Enter to search
+        </p>
+      </div>
+
+      <div
+        ref={mapContainer}
+        className="rounded-2xl overflow-hidden border"
+        style={{ height: 480, borderColor: 'var(--border)' }}
+        aria-label="Hospital map"
+        role="region"
+      />
+    </div>
   )
 }
