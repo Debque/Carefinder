@@ -14,6 +14,7 @@ import { Navbar } from '@/components/shared/Navbar'
 import { StarRating } from '@/components/shared/StarRating'
 import { getHospitalById } from '@/lib/supabase/queries'
 import { RatingWidget } from '@/components/hospital/RatingWidget'
+import { createClient } from '@/lib/supabase/server'
 
 export const revalidate = 60
 
@@ -26,6 +27,16 @@ export default async function HospitalDetailPage({ params }: Props) {
   const hospital = await getHospitalById(id)
 
   if (!hospital) notFound()
+
+  const supabase = await createClient()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db = supabase as any
+  const { data: approvedReviews } = await db
+    .from('reviews')
+    .select('id, rating, content, created_at')
+    .eq('hospital_id', id)
+    .eq('status', 'approved')
+    .order('created_at', { ascending: false })
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
@@ -41,6 +52,7 @@ export default async function HospitalDetailPage({ params }: Props) {
           Back to search
         </Link>
 
+        {/* Header card */}
         <div
           className="rounded-2xl border p-5 sm:p-7 mb-5 animate-fadeUp"
           style={{
@@ -53,11 +65,11 @@ export default async function HospitalDetailPage({ params }: Props) {
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2 flex-wrap">
                 <span
-                  className={`badge ${
+                  className={
                     hospital.ownership === 'public'
-                      ? 'badge-public'
-                      : 'badge-private'
-                  }`}
+                      ? 'badge badge-public'
+                      : 'badge badge-private'
+                  }
                 >
                   {hospital.ownership === 'public' ? 'Public' : 'Private'}
                 </span>
@@ -116,7 +128,9 @@ export default async function HospitalDetailPage({ params }: Props) {
           </div>
         </div>
 
+        {/* Body grid */}
         <div className="grid sm:grid-cols-3 gap-5">
+          {/* Left column */}
           <div
             className="sm:col-span-1 rounded-2xl border p-5 animate-fadeUp delay-100"
             style={{
@@ -134,7 +148,7 @@ export default async function HospitalDetailPage({ params }: Props) {
                     className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                     style={{ background: 'var(--accent-subtle)' }}
                   >
-                    <Phone size={14} style={{ color: 'var(--accent)' }} />
+                    <Phone size={14} color="var(--accent)" />
                   </div>
                   <div>
                     <p
@@ -160,7 +174,7 @@ export default async function HospitalDetailPage({ params }: Props) {
                     className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                     style={{ background: 'var(--accent-subtle)' }}
                   >
-                    <Mail size={14} style={{ color: 'var(--accent)' }} />
+                    <Mail size={14} color="var(--accent)" />
                   </div>
                   <div>
                     <p
@@ -186,7 +200,7 @@ export default async function HospitalDetailPage({ params }: Props) {
                     className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                     style={{ background: 'var(--accent-subtle)' }}
                   >
-                    <Globe size={14} style={{ color: 'var(--accent)' }} />
+                    <Globe size={14} color="var(--accent)" />
                   </div>
                   <div>
                     <p
@@ -214,7 +228,7 @@ export default async function HospitalDetailPage({ params }: Props) {
                     className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                     style={{ background: 'var(--accent-subtle)' }}
                   >
-                    <Clock size={14} style={{ color: 'var(--accent)' }} />
+                    <Clock size={14} color="var(--accent)" />
                   </div>
                   <div>
                     <p
@@ -248,6 +262,7 @@ export default async function HospitalDetailPage({ params }: Props) {
             )}
           </div>
 
+          {/* Right column */}
           <div className="sm:col-span-2 flex flex-col gap-5">
             {hospital.images && hospital.images.length > 0 && (
               <div
@@ -283,7 +298,9 @@ export default async function HospitalDetailPage({ params }: Props) {
                 <div
                   className="prose prose-sm max-w-none"
                   style={{ color: 'var(--fg-muted)' }}
-                  dangerouslySetInnerHTML={{ __html: hospital.description }}
+                  dangerouslySetInnerHTML={{
+                    __html: hospital.description ?? '',
+                  }}
                 />
               </div>
             ) : (
@@ -302,10 +319,12 @@ export default async function HospitalDetailPage({ params }: Props) {
           </div>
         </div>
 
-        {/* Reviews section */}
-        {/* Reviews section */}
+        {/* Reviews */}
         <div className="mt-5 animate-fadeUp delay-300">
-          <RatingWidget hospitalId={hospital.id} />
+          <RatingWidget
+            hospitalId={hospital.id}
+            initialReviews={approvedReviews ?? []}
+          />
         </div>
       </div>
     </div>
