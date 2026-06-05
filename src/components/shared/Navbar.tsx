@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Share2, Menu, X } from 'lucide-react'
+import { Share2, Check, Menu, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Logo } from './Logo'
 import { ThemeToggle } from './ThemeToggle'
@@ -18,6 +18,7 @@ export function Navbar() {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     const supabase = createClient(
@@ -102,14 +103,42 @@ export function Navbar() {
             </Link>
           )}
 
-          <Link
-            href="/search"
+          <button
+            onClick={async () => {
+              const url = window.location.href
+              if (navigator.share) {
+                try {
+                  await navigator.share({ title: document.title, url })
+                  return
+                } catch {
+                  // fall through to clipboard
+                }
+              }
+              try {
+                await navigator.clipboard.writeText(url)
+              } catch {
+                const input = document.createElement('input')
+                input.value = url
+                document.body.appendChild(input)
+                input.select()
+                document.execCommand('copy')
+                document.body.removeChild(input)
+              }
+              setCopied(true)
+              setTimeout(() => setCopied(false), 2000)
+            }}
             className="btn-primary hidden md:inline-flex"
-            style={{ paddingTop: '8px', paddingBottom: '8px' }}
+            style={{
+              paddingTop: '8px',
+              paddingBottom: '8px',
+              background: copied ? '#10b981' : 'var(--accent)',
+              transition: 'background 0.15s',
+            }}
+            aria-label="Share this page"
           >
-            <Share2 size={14} />
-            Share
-          </Link>
+            {copied ? <Check size={14} /> : <Share2 size={14} />}
+            {copied ? 'Copied!' : 'Share'}
+          </button>
 
           {/* Mobile menu button */}
           <button
@@ -159,14 +188,37 @@ export function Navbar() {
             </Link>
           )}
 
-          <Link
-            href="/search"
-            className="btn-primary mt-2 justify-center"
-            onClick={() => setMobileOpen(false)}
+          <button
+            onClick={async () => {
+              setMobileOpen(false)
+              const url = window.location.href
+              if (navigator.share) {
+                try {
+                  await navigator.share({ title: document.title, url })
+                  return
+                } catch {
+                  // fall through
+                }
+              }
+              try {
+                await navigator.clipboard.writeText(url)
+              } catch {
+                const input = document.createElement('input')
+                input.value = url
+                document.body.appendChild(input)
+                input.select()
+                document.execCommand('copy')
+                document.body.removeChild(input)
+              }
+              setCopied(true)
+              setTimeout(() => setCopied(false), 2000)
+            }}
+            className="btn-primary mt-2 justify-center w-full"
+            aria-label="Share this page"
           >
-            <Share2 size={14} />
-            Share
-          </Link>
+            {copied ? <Check size={14} /> : <Share2 size={14} />}
+            {copied ? 'Copied!' : 'Share'}
+          </button>
         </div>
       )}
     </header>
