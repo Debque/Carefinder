@@ -32,7 +32,7 @@ export async function searchHospitals(
     query = query.order('name', { ascending: true })
   }
 
-  query = query.limit(50)
+  query = query.limit(200)
 
   const { data, error } = await query
   if (error) {
