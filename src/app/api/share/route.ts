@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
             </ul>
 
             
-              href="${shareUrl}"
+             <a href="${shareUrl}"
               style="display: inline-block; background: #5B50F0; color: white; padding: 12px 24px; border-radius: 999px; text-decoration: none; font-weight: 600; margin-top: 16px;"
             >
               View full list on Carefinder
