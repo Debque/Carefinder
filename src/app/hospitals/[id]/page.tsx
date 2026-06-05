@@ -7,7 +7,6 @@ import {
   Globe,
   Clock,
   ArrowLeft,
-  Share2,
   Navigation,
 } from 'lucide-react'
 import { Navbar } from '@/components/shared/Navbar'
@@ -15,6 +14,7 @@ import { StarRating } from '@/components/shared/StarRating'
 import { getHospitalById } from '@/lib/supabase/queries'
 import { RatingWidget } from '@/components/hospital/RatingWidget'
 import { createClient } from '@/lib/supabase/server'
+import { HospitalShareButton } from '@/components/shared/HospitalShareButton'
 
 export const revalidate = 60
 
@@ -120,10 +120,10 @@ export default async function HospitalDetailPage({ params }: Props) {
                 <Navigation size={14} />
                 Get directions
               </Link>
-              <button className="btn-secondary">
-                <Share2 size={14} />
-                Share
-              </button>
+              <HospitalShareButton
+                hospitalId={hospital.id}
+                hospitalName={hospital.name}
+              />
             </div>
           </div>
         </div>
