@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       .join('')
 
     const { data, error } = await resend.emails.send({
-      from: 'Carefinder <noreply@carefinder.ng>',
+      from: 'Carefinder <onboarding@resend.dev>',
       to: [to],
       subject: `Hospital list shared via Carefinder`,
       html: `
