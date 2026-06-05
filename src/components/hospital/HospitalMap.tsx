@@ -98,38 +98,54 @@ export function HospitalMap({
 
           const isSelected = selectedId === hospital.id
 
-          // Plain circle — no rotation so hover never causes it to fly
-          const el = document.createElement('div')
-          el.style.cssText = `
+          // Outer wrapper — Mapbox positions this, never transform it
+          const wrapper = document.createElement('div')
+          wrapper.style.cssText = `
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+          `
+
+          // Inner dot — only this gets scaled on hover
+          const dot = document.createElement('div')
+          dot.style.cssText = `
             width: 22px;
             height: 22px;
             border-radius: 50%;
-            cursor: pointer;
             background: ${isSelected ? '#4338CA' : '#5B50F0'};
             border: 3px solid white;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
             transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
+            transform-origin: center center;
           `
 
-          // Popup shown on hover
+          wrapper.appendChild(dot)
+
+          // Popup — entire card is a clickable link
           const popup = new mapboxgl.Popup({
-            offset: 18,
+            offset: 14,
             closeButton: false,
             closeOnClick: false,
             maxWidth: '240px',
           }).setHTML(`
-            <div style="font-family: 'DM Sans', sans-serif; padding: 10px 12px; min-width: 180px;">
-              <p style="font-weight: 700; font-size: 13px; margin: 0 0 4px; color: #0D1B2A; line-height: 1.3;">
-                ${hospital.name}
+            
+               <a href="/hospitals/${hospital.id}"
+              style="font-family: 'DM Sans', sans-serif; padding: 10px 12px; min-width: 180px; display: block; text-decoration: none; cursor: pointer;"
+            >
+              <p style="font-weight: 700; font-size: 13px; margin: 0 0 4px; color: #5B50F0; line-height: 1.3;">
+                ${hospital.name} →
               </p>
+
               <p style="font-size: 11px; color: #6B7280; margin: 0 0 6px;">
                 📍 ${hospital.city}, ${hospital.state}
               </p>
+
               ${
                 hospital.address
                   ? `<p style="font-size: 11px; color: #6B7280; margin: 0 0 6px;">${hospital.address}</p>`
                   : ''
               }
+
               <div style="margin-bottom: 6px;">
                 <span style="
                   font-size: 10px;
@@ -141,51 +157,85 @@ export function HospitalMap({
                   text-transform: capitalize;
                 ">${hospital.ownership}</span>
               </div>
+
               ${
                 hospital.specialties?.length
                   ? `<p style="font-size: 11px; color: #5B50F0; margin: 0 0 4px; font-weight: 500;">
-                      ${hospital.specialties.slice(0, 2).join(' · ')}
-                    </p>`
+                    ${hospital.specialties.slice(0, 2).join(' · ')}
+                  </p>`
                   : ''
               }
+
               ${
                 hospital.rating_avg
                   ? `<p style="font-size: 12px; color: #F59E0B; margin: 0 0 4px;">
-                      ${'★'.repeat(Math.round(hospital.rating_avg))}${'☆'.repeat(5 - Math.round(hospital.rating_avg))}
-                      <span style="font-size: 11px; color: #6B7280;">
-                        ${hospital.rating_avg.toFixed(1)} (${hospital.review_count ?? 0})
-                      </span>
-                    </p>`
+                    ${'★'.repeat(Math.round(hospital.rating_avg))}${'☆'.repeat(5 - Math.round(hospital.rating_avg))}
+                    <span style="font-size: 11px; color: #6B7280;">
+                      ${hospital.rating_avg.toFixed(1)} (${hospital.review_count ?? 0})
+                    </span>
+                  </p>`
                   : ''
               }
+
               ${
                 hospital.phone
                   ? `<p style="font-size: 11px; color: #6B7280; margin: 4px 0 0;">📞 ${hospital.phone}</p>`
                   : ''
               }
-            </div>
+            </a>
           `)
 
-          // No .setPopup() — hover controls it manually
-          new mapboxgl.Marker({ element: el }).setLngLat([lng, lat]).addTo(map)
+          // Attach marker using wrapper only
+          new mapboxgl.Marker({ element: wrapper })
+            .setLngLat([lng, lat])
+            .addTo(map)
 
-          // Hover: scale only, no rotation
-          el.addEventListener('mouseenter', () => {
-            el.style.transform = 'scale(1.3)'
-            el.style.background = '#4338CA'
-            el.style.boxShadow = '0 4px 16px rgba(91,80,240,0.5)'
+          let popupHovered = false
+          let markerHovered = false
+
+          const showPopup = () => {
             popup.setLngLat([lng, lat]).addTo(map)
+          }
+
+          const hidePopup = () => {
+            setTimeout(() => {
+              if (!popupHovered && !markerHovered) {
+                dot.style.transform = 'scale(1)'
+                dot.style.background = isSelected ? '#4338CA' : '#5B50F0'
+                dot.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)'
+                popup.remove()
+              }
+            }, 100)
+          }
+
+          wrapper.addEventListener('mouseenter', () => {
+            markerHovered = true
+            dot.style.transform = 'scale(1.35)'
+            dot.style.background = '#4338CA'
+            dot.style.boxShadow = '0 4px 16px rgba(91,80,240,0.5)'
+            showPopup()
           })
 
-          el.addEventListener('mouseleave', () => {
-            el.style.transform = 'scale(1)'
-            el.style.background = isSelected ? '#4338CA' : '#5B50F0'
-            el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)'
-            popup.remove()
+          wrapper.addEventListener('mouseleave', () => {
+            markerHovered = false
+            hidePopup()
           })
 
-          // Click selects hospital in the results list
-          el.addEventListener('click', () => {
+          // Keep popup open when hovering over it so link can be clicked
+          popup.on('open', () => {
+            const popupEl = popup.getElement()
+            if (popupEl) {
+              popupEl.addEventListener('mouseenter', () => {
+                popupHovered = true
+              })
+              popupEl.addEventListener('mouseleave', () => {
+                popupHovered = false
+                hidePopup()
+              })
+            }
+          })
+
+          wrapper.addEventListener('click', () => {
             onSelect(hospital.id)
           })
         })
