@@ -1,4 +1,6 @@
-import Link from 'next/link'
+'use client'
+
+import { useRouter } from 'next/navigation'
 import { MapPin, Phone } from 'lucide-react'
 import { StarRating } from '@/components/shared/StarRating'
 import type { Hospital } from '@/types'
@@ -14,26 +16,45 @@ export function HospitalCard({
   isSelected,
   onClick,
 }: HospitalCardProps) {
+  const router = useRouter()
+
+  const handleClick = () => {
+    onClick?.()
+    router.push(`/hospitals/${hospital.id}`)
+  }
+
   return (
     <div
-      onClick={onClick}
-      className="flex gap-3 p-3 rounded-xl cursor-pointer transition-all duration-150"
+      onClick={handleClick}
+      className="group flex gap-4 p-4 rounded-2xl cursor-pointer"
       style={{
         background: isSelected ? 'var(--accent-subtle)' : 'var(--bg-card)',
         border: `1px solid ${isSelected ? 'var(--accent)' : 'var(--border)'}`,
-        boxShadow: isSelected
-          ? '0 0 0 2px rgba(91,80,240,0.15)'
-          : 'var(--shadow-sm)',
+        boxShadow: 'var(--shadow-sm)',
+        transition:
+          'transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease',
+      }}
+      onMouseEnter={(e) => {
+        const el = e.currentTarget
+        el.style.transform = 'translateY(-4px)'
+        el.style.boxShadow = '0 12px 32px rgba(91,80,240,0.18)'
+        el.style.borderColor = 'var(--accent)'
+      }}
+      onMouseLeave={(e) => {
+        const el = e.currentTarget
+        el.style.transform = 'translateY(0)'
+        el.style.boxShadow = 'var(--shadow-sm)'
+        el.style.borderColor = isSelected ? 'var(--accent)' : 'var(--border)'
       }}
       role="button"
       tabIndex={0}
-      aria-pressed={isSelected}
-      onKeyDown={(e) => e.key === 'Enter' && onClick?.()}
+      aria-label={`View details for ${hospital.name}`}
+      onKeyDown={(e) => e.key === 'Enter' && handleClick()}
     >
       {/* Thumbnail */}
       <div
-        className="flex-shrink-0 rounded-lg overflow-hidden"
-        style={{ width: 72, height: 72, background: 'var(--bg-soft)' }}
+        className="flex-shrink-0 rounded-xl overflow-hidden"
+        style={{ width: 80, height: 80, background: 'var(--bg-soft)' }}
       >
         {hospital.images?.[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -47,7 +68,7 @@ export function HospitalCard({
             className="w-full h-full flex items-center justify-center"
             style={{ background: 'var(--accent-subtle)' }}
           >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
               <path
                 d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
                 fill="var(--accent)"
@@ -62,23 +83,24 @@ export function HospitalCard({
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <Link
-          href={`/hospitals/${hospital.id}`}
-          className="block font-semibold text-sm leading-snug hover:underline"
+        <p
+          className="font-bold text-sm leading-snug mb-0.5"
           style={{ fontFamily: 'Sora, sans-serif', color: 'var(--fg)' }}
-          onClick={(e) => e.stopPropagation()}
         >
           {hospital.name}
-        </Link>
-
-        <p
-          className="text-xs mt-0.5 truncate"
-          style={{ color: 'var(--fg-muted)' }}
-        >
-          {hospital.city}, {hospital.state}
         </p>
 
-        <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+        <div
+          className="flex items-center gap-1 mb-2"
+          style={{ color: 'var(--fg-muted)' }}
+        >
+          <MapPin size={11} />
+          <p className="text-xs truncate">
+            {hospital.city}, {hospital.state}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-1.5 flex-wrap mb-2">
           <span
             className={`badge ${
               hospital.ownership === 'public' ? 'badge-public' : 'badge-private'
@@ -93,7 +115,7 @@ export function HospitalCard({
           ))}
         </div>
 
-        <div className="flex items-center justify-between mt-1.5">
+        <div className="flex items-center justify-between">
           {hospital.rating_avg > 0 ? (
             <StarRating
               rating={hospital.rating_avg}
@@ -104,24 +126,22 @@ export function HospitalCard({
               No reviews yet
             </span>
           )}
+
           {hospital.distance_km !== undefined && (
-            <div className="flex items-center gap-1">
-              <MapPin size={11} style={{ color: 'var(--fg-subtle)' }} />
-              <span
-                className="text-xs font-medium"
-                style={{ color: 'var(--fg-muted)' }}
-              >
-                {hospital.distance_km < 1
-                  ? `${Math.round(hospital.distance_km * 1000)}m`
-                  : `${hospital.distance_km.toFixed(1)} km`}
-              </span>
-            </div>
+            <span
+              className="text-xs font-medium"
+              style={{ color: 'var(--fg-muted)' }}
+            >
+              {hospital.distance_km < 1
+                ? `${Math.round(hospital.distance_km * 1000)}m`
+                : `${hospital.distance_km.toFixed(1)} km`}
+            </span>
           )}
         </div>
 
         {hospital.phone && (
-          <div className="flex items-center gap-1 mt-1">
-            <Phone size={10} style={{ color: 'var(--fg-subtle)' }} />
+          <div className="flex items-center gap-1 mt-1.5">
+            <Phone size={10} color="var(--fg-subtle)" />
             <span className="text-xs" style={{ color: 'var(--fg-subtle)' }}>
               {hospital.phone}
             </span>
