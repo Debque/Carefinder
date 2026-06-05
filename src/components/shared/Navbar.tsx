@@ -9,9 +9,8 @@ import { ThemeToggle } from './ThemeToggle'
 import { createClient } from '@supabase/supabase-js'
 
 const navLinks = [
-  { href: '/search', label: 'Search' },
-  { href: '/search?view=hospitals', label: 'Hospitals' },
-  { href: '/#about', label: 'About' },
+  { href: '/', label: 'Home' },
+  { href: '/search', label: 'Find Hospitals' },
 ]
 
 export function Navbar() {
