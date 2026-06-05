@@ -83,8 +83,12 @@ export function ResultsList({
             onChange={(e) =>
               handleSortChange(e.target.value as SearchFilters['sortBy'])
             }
-            className="text-xs font-semibold border-none outline-none cursor-pointer bg-transparent"
-            style={{ color: 'var(--fg)' }}
+            className="text-xs font-semibold border outline-none cursor-pointer rounded-lg px-2 py-1"
+            style={{
+              color: 'var(--fg)',
+              background: 'var(--bg-card)',
+              borderColor: 'var(--border)',
+            }}
             aria-label="Sort results"
           >
             <option value="distance">Distance</option>
