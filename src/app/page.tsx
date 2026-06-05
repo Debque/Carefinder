@@ -182,7 +182,10 @@ export default async function LandingPage() {
             {/* Stats — live from Supabase */}
             <div className="flex items-stretch gap-0 mt-10 flex-wrap">
               {[
-                { value: `${hospitalCount ?? 0}`, label: 'Hospitals listed' },
+                {
+                  value: `${hospitalCount && hospitalCount >= 100 ? '100+' : (hospitalCount ?? 0)}`,
+                  label: 'Hospitals listed',
+                },
                 { value: `${uniqueStates}`, label: 'States covered' },
                 { value: 'Free', label: 'Always free to use' },
               ].map((s, i) => (
