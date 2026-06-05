@@ -1,13 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { getBrowserClient } from '@/lib/supabase/browser'
 import { StarRating } from '@/components/shared/StarRating'
-
-interface RatingWidgetProps {
-  hospitalId: string
-  onSubmit?: (rating: number) => void
-}
 
 interface Review {
   id: string
@@ -16,47 +11,23 @@ interface Review {
   created_at: string
 }
 
-export function RatingWidget({ hospitalId, onSubmit }: RatingWidgetProps) {
+interface RatingWidgetProps {
+  hospitalId: string
+  initialReviews: Review[]
+  onSubmit?: (rating: number) => void
+}
+
+export function RatingWidget({
+  hospitalId,
+  initialReviews,
+  onSubmit,
+}: RatingWidgetProps) {
   const [hovered, setHovered] = useState(0)
   const [selected, setSelected] = useState(0)
   const [content, setContent] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [reviews, setReviews] = useState<Review[]>([])
-  const [loadingReviews, setLoadingReviews] = useState(true)
-
-  // Fetch approved reviews — no auth needed
-  useEffect(() => {
-    const fetchReviews = async () => {
-      const supabase = getBrowserClient()
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const db = supabase as any
-      const { data } = await db
-        .from('reviews')
-        .select('id, rating, content, created_at')
-        .eq('hospital_id', hospitalId)
-        .eq('status', 'approved')
-        .order('created_at', { ascending: false })
-
-      setReviews(data ?? [])
-      setLoadingReviews(false)
-    }
-    fetchReviews()
-  }, [hospitalId, submitted])
-
-  // Check if user is logged in
-  useEffect(() => {
-    const checkAuth = async () => {
-      const supabase = getBrowserClient()
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      setIsLoggedIn(!!session?.user)
-    }
-    checkAuth()
-  }, [])
 
   const handleSubmit = async () => {
     if (selected === 0) {
@@ -105,21 +76,16 @@ export function RatingWidget({ hospitalId, onSubmit }: RatingWidgetProps) {
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Approved reviews — visible to everyone */}
+      {/* Approved reviews — server-fetched, visible to everyone */}
       <div
         className="rounded-2xl border p-5"
         style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}
       >
         <p className="section-label mb-4">
-          Reviews {reviews.length > 0 && `(${reviews.length})`}
+          Reviews{initialReviews.length > 0 && ` (${initialReviews.length})`}
         </p>
 
-        {loadingReviews ? (
-          <div className="flex flex-col gap-3">
-            <div className="skeleton h-16 rounded-xl" />
-            <div className="skeleton h-16 rounded-xl" />
-          </div>
-        ) : reviews.length === 0 ? (
+        {initialReviews.length === 0 ? (
           <div
             className="text-center py-8 rounded-xl border"
             style={{
@@ -137,7 +103,7 @@ export function RatingWidget({ hospitalId, onSubmit }: RatingWidgetProps) {
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            {reviews.map((review) => (
+            {initialReviews.map((review) => (
               <div
                 key={review.id}
                 className="rounded-xl border p-4"
@@ -189,21 +155,6 @@ export function RatingWidget({ hospitalId, onSubmit }: RatingWidgetProps) {
           style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}
         >
           <p className="section-label mb-4">Leave a Review</p>
-
-          {!isLoggedIn && (
-            <div
-              className="rounded-xl p-3 mb-4 text-sm"
-              style={{
-                background: 'var(--accent-subtle)',
-                color: 'var(--accent)',
-              }}
-            >
-              <a href="/login" className="font-semibold underline">
-                Log in
-              </a>{' '}
-              to leave a review. Reading reviews is always free.
-            </div>
-          )}
 
           <div className="flex items-center gap-1 mb-4">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -273,6 +224,16 @@ export function RatingWidget({ hospitalId, onSubmit }: RatingWidgetProps) {
           >
             {submitting ? 'Submitting...' : 'Submit Review'}
           </button>
+
+          <p
+            className="text-xs mt-3 text-center"
+            style={{ color: 'var(--fg-subtle)' }}
+          >
+            You must be logged in to submit.{' '}
+            <a href="/login" style={{ color: 'var(--accent)' }}>
+              Log in here
+            </a>
+          </p>
         </div>
       )}
     </div>
