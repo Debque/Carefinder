@@ -151,26 +151,58 @@ export function ResultsList({
                   <ChevronLeft size={14} />
                 </button>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (p) => (
-                    <button
-                      key={p}
-                      onClick={() => setPage(p)}
-                      className="flex items-center justify-center w-8 h-8 rounded-lg border text-xs font-semibold transition-all"
-                      style={{
-                        borderColor:
-                          page === p ? 'var(--accent)' : 'var(--border)',
-                        background:
-                          page === p ? 'var(--accent)' : 'var(--bg-card)',
-                        color: page === p ? 'white' : 'var(--fg-muted)',
-                      }}
-                      aria-label={`Page ${p}`}
-                      aria-current={page === p ? 'page' : undefined}
-                    >
-                      {p}
-                    </button>
-                  )
-                )}
+                {(() => {
+                  const pages = []
+                  const delta = 1
+                  const left = page - delta
+                  const right = page + delta
+
+                  for (let p = 1; p <= totalPages; p++) {
+                    if (
+                      p === 1 ||
+                      p === totalPages ||
+                      (p >= left && p <= right)
+                    ) {
+                      pages.push(p)
+                    }
+                  }
+
+                  const result = []
+                  let prev = 0
+                  for (const p of pages) {
+                    if (prev && p - prev > 1) {
+                      result.push(
+                        <span
+                          key={`ellipsis-${p}`}
+                          className="flex items-center justify-center w-8 h-8 text-xs"
+                          style={{ color: 'var(--fg-subtle)' }}
+                        >
+                          ...
+                        </span>
+                      )
+                    }
+                    result.push(
+                      <button
+                        key={p}
+                        onClick={() => setPage(p)}
+                        className="flex items-center justify-center w-8 h-8 rounded-lg border text-xs font-semibold transition-all"
+                        style={{
+                          borderColor:
+                            page === p ? 'var(--accent)' : 'var(--border)',
+                          background:
+                            page === p ? 'var(--accent)' : 'var(--bg-card)',
+                          color: page === p ? 'white' : 'var(--fg-muted)',
+                        }}
+                        aria-label={`Page ${p}`}
+                        aria-current={page === p ? 'page' : undefined}
+                      >
+                        {p}
+                      </button>
+                    )
+                    prev = p
+                  }
+                  return result
+                })()}
 
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
