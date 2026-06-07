@@ -12,7 +12,9 @@ import {
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/shared/ThemeToggle'
 import { createClient } from '@/lib/supabase/server'
-export const revalidate = 3600 // revalidate every hour
+
+export const revalidate = 3600
+
 export default async function LandingPage() {
   const supabase = await createClient()
 
@@ -40,7 +42,6 @@ export default async function LandingPage() {
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
-          {/* Logo */}
           <div className="flex items-center gap-2.5">
             <Image
               src="/favicon-32x32.png"
@@ -59,7 +60,6 @@ export default async function LandingPage() {
             </span>
           </div>
 
-          {/* Nav links */}
           <nav className="hidden md:flex items-center gap-1">
             {[
               { label: 'Find Hospitals', href: '/search' },
@@ -77,7 +77,6 @@ export default async function LandingPage() {
             ))}
           </nav>
 
-          {/* Right actions */}
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <Link
@@ -100,14 +99,13 @@ export default async function LandingPage() {
 
       {/* Hero */}
       <section
-        className="relative overflow-hidden flex-1"
+        className="relative overflow-hidden"
         style={{
           background:
             'linear-gradient(135deg, #0D1B2A 0%, #1A2D42 60%, #1e2d5a 100%)',
           minHeight: 600,
         }}
       >
-        {/* Grid pattern */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -116,7 +114,6 @@ export default async function LandingPage() {
             backgroundSize: '40px 40px',
           }}
         />
-        {/* Glow orb */}
         <div
           className="absolute top-20 right-1/3 w-96 h-96 rounded-full pointer-events-none"
           style={{
@@ -127,7 +124,6 @@ export default async function LandingPage() {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-20 pb-24">
           <div className="max-w-2xl">
-            {/* Pill badge */}
             <div
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-6"
               style={{
@@ -179,7 +175,7 @@ export default async function LandingPage() {
               </Link>
             </div>
 
-            {/* Stats — live from Supabase */}
+            {/* Stats */}
             <div className="flex items-stretch gap-0 mt-10 flex-wrap">
               {[
                 {
@@ -218,8 +214,65 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* How it works */}
+      <section
+        id="how"
+        className="py-16 px-4 sm:px-6 border-t"
+        style={{ borderColor: 'var(--border)' }}
+      >
+        <div className="max-w-4xl mx-auto text-center">
+          <p className="section-label mb-3">How it works</p>
+          <h2
+            className="text-3xl font-bold mb-12"
+            style={{ fontFamily: 'Sora, sans-serif', color: 'var(--fg)' }}
+          >
+            Find care in 3 simple steps
+          </h2>
+          <div className="grid sm:grid-cols-3 gap-8">
+            {[
+              {
+                step: '1',
+                title: 'Search',
+                desc: 'Find hospitals by name, city, LGA, or specialty across all 36 states.',
+              },
+              {
+                step: '2',
+                title: 'Compare',
+                desc: 'View ratings, specialties, ownership details and visiting hours.',
+              },
+              {
+                step: '3',
+                title: 'Visit',
+                desc: 'Call directly, get directions, export the list, or share with others.',
+              },
+            ].map((item) => (
+              <div key={item.step} className="flex flex-col items-center gap-3">
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white"
+                  style={{ background: 'var(--accent)' }}
+                >
+                  {item.step}
+                </div>
+                <p
+                  className="font-bold text-base"
+                  style={{ fontFamily: 'Sora, sans-serif', color: 'var(--fg)' }}
+                >
+                  {item.title}
+                </p>
+                <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>
+                  {item.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Features */}
-      <section id="how" className="py-20 px-4 sm:px-6">
+      <section
+        className="py-20 px-4 sm:px-6 border-t"
+        style={{ borderColor: 'var(--border)', background: 'var(--bg-soft)' }}
+      >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-14">
             <p className="section-label mb-3">What you can do</p>
@@ -294,6 +347,49 @@ export default async function LandingPage() {
                   {f.desc}
                 </p>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Browse by specialty */}
+      <section
+        className="py-16 px-4 sm:px-6 border-t"
+        style={{ borderColor: 'var(--border)' }}
+      >
+        <div className="max-w-7xl mx-auto text-center">
+          <p className="section-label mb-3">Browse by specialty</p>
+          <h2
+            className="text-2xl font-bold mb-8"
+            style={{ fontFamily: 'Sora, sans-serif', color: 'var(--fg)' }}
+          >
+            Find the right type of care
+          </h2>
+          <div className="flex flex-wrap justify-center gap-2">
+            {[
+              'Emergency',
+              'Maternity',
+              'Pediatrics',
+              'Dental',
+              'Cardiology',
+              'Surgery',
+              'Oncology',
+              'General',
+              'Neurology',
+              'Teaching',
+            ].map((s) => (
+              <Link
+                key={s}
+                href={`/search?specialty=${s}`}
+                className="px-4 py-2 rounded-full text-sm font-medium border transition-all"
+                style={{
+                  borderColor: 'var(--border)',
+                  color: 'var(--fg-muted)',
+                  background: 'var(--bg-card)',
+                }}
+              >
+                {s}
+              </Link>
             ))}
           </div>
         </div>
