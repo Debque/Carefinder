@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import Image from 'next/image'
+import Link from "next/link";
+import Image from "next/image";
 import {
   Search,
   Share2,
@@ -9,36 +9,41 @@ import {
   MapPin,
   Shield,
   Clock,
-} from 'lucide-react'
-import { ThemeToggle } from '@/components/shared/ThemeToggle'
-import { createClient } from '@/lib/supabase/server'
+} from "lucide-react";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { createClient } from "@/lib/supabase/server";
 
-export const revalidate = 3600
+export const revalidate = 0;
 
 export default async function LandingPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   const { count: hospitalCount } = await supabase
-    .from('hospitals')
-    .select('*', { count: 'exact', head: true })
+    .from("hospitals")
+    .select("*", { count: "exact", head: true });
 
-  const { data: stateData } = await supabase.from('hospitals').select('state')
+  const { data: stateData } = await supabase.from("hospitals").select("state");
 
-  const uniqueStates = new Set(stateData?.map((h) => h.state) ?? []).size
+  const uniqueStates = new Set(stateData?.map((h) => h.state) ?? []).size;
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const isLoggedIn = !!session?.user;
 
   return (
     <div
       className="min-h-screen flex flex-col"
-      style={{ background: 'var(--bg)' }}
+      style={{ background: "var(--bg)" }}
     >
       {/* Nav */}
       <header
         className="sticky top-0 z-50 border-b"
         style={{
-          background: 'var(--navbar-bg)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          borderColor: 'var(--border)',
+          background: "var(--navbar-bg)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          borderColor: "var(--border)",
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
@@ -53,24 +58,24 @@ export default async function LandingPage() {
             />
             <span
               className="text-lg font-bold"
-              style={{ fontFamily: 'Sora, sans-serif', lineHeight: 1 }}
+              style={{ fontFamily: "Sora, sans-serif", lineHeight: 1 }}
             >
-              <span style={{ color: 'var(--fg)' }}>Care</span>
-              <span style={{ color: 'var(--accent)' }}>finder</span>
+              <span style={{ color: "var(--fg)" }}>Care</span>
+              <span style={{ color: "var(--accent)" }}>finder</span>
             </span>
           </div>
 
           <nav className="hidden md:flex items-center gap-1">
             {[
-              { label: 'Find Hospitals', href: '/search' },
-              { label: 'About', href: '#about' },
-              { label: 'How it works', href: '#how' },
+              { label: "Find Hospitals", href: "/search" },
+              { label: "About", href: "#about" },
+              { label: "How it works", href: "#how" },
             ].map((l) => (
               <Link
                 key={l.label}
                 href={l.href}
                 className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
-                style={{ color: 'var(--fg-muted)' }}
+                style={{ color: "var(--fg-muted)" }}
               >
                 {l.label}
               </Link>
@@ -79,16 +84,29 @@ export default async function LandingPage() {
 
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Link
-              href="/login"
-              className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border transition-all"
-              style={{
-                borderColor: 'var(--border)',
-                color: 'var(--fg-muted)',
-              }}
-            >
-              Log in
-            </Link>
+            {isLoggedIn ? (
+              <Link
+                href="/search"
+                className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border transition-all"
+                style={{
+                  borderColor: "var(--border)",
+                  color: "var(--fg-muted)",
+                }}
+              >
+                My Account
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border transition-all"
+                style={{
+                  borderColor: "var(--border)",
+                  color: "var(--fg-muted)",
+                }}
+              >
+                Log in
+              </Link>
+            )}
             <Link href="/search" className="btn-primary">
               <Search size={14} />
               Find Hospitals
@@ -102,7 +120,7 @@ export default async function LandingPage() {
         className="relative overflow-hidden"
         style={{
           background:
-            'linear-gradient(135deg, #0D1B2A 0%, #1A2D42 60%, #1e2d5a 100%)',
+            "linear-gradient(135deg, #0D1B2A 0%, #1A2D42 60%, #1e2d5a 100%)",
           minHeight: 600,
         }}
       >
@@ -110,15 +128,15 @@ export default async function LandingPage() {
           className="absolute inset-0 pointer-events-none"
           style={{
             backgroundImage:
-              'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
-            backgroundSize: '40px 40px',
+              "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
           }}
         />
         <div
           className="absolute top-20 right-1/3 w-96 h-96 rounded-full pointer-events-none"
           style={{
             background:
-              'radial-gradient(circle, rgba(91,80,240,0.3) 0%, transparent 70%)',
+              "radial-gradient(circle, rgba(91,80,240,0.3) 0%, transparent 70%)",
           }}
         />
 
@@ -127,9 +145,9 @@ export default async function LandingPage() {
             <div
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-6"
               style={{
-                background: 'rgba(91,80,240,0.2)',
-                border: '1px solid rgba(91,80,240,0.4)',
-                color: '#A5B4FC',
+                background: "rgba(91,80,240,0.2)",
+                border: "1px solid rgba(91,80,240,0.4)",
+                color: "#A5B4FC",
               }}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
@@ -138,15 +156,15 @@ export default async function LandingPage() {
 
             <h1
               className="text-5xl sm:text-6xl font-extrabold text-white leading-tight mb-6"
-              style={{ fontFamily: 'Sora, sans-serif' }}
+              style={{ fontFamily: "Sora, sans-serif" }}
             >
-              Find the right hospital,{' '}
-              <span style={{ color: '#818CF8' }}>fast.</span>
+              Find the right hospital,{" "}
+              <span style={{ color: "#818CF8" }}>fast.</span>
             </h1>
 
             <p
               className="text-lg mb-8 leading-relaxed"
-              style={{ color: 'rgba(255,255,255,0.65)' }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               Search hospitals across Nigeria by location, specialty, and
               ownership type. Export results, share with others, and get
@@ -165,9 +183,9 @@ export default async function LandingPage() {
                 href="#how"
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold transition-all"
                 style={{
-                  background: 'rgba(255,255,255,0.1)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  color: 'white',
+                  background: "rgba(255,255,255,0.1)",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  color: "white",
                 }}
               >
                 How it works
@@ -179,31 +197,31 @@ export default async function LandingPage() {
             <div className="flex items-stretch gap-0 mt-10 flex-wrap">
               {[
                 {
-                  value: `${hospitalCount && hospitalCount >= 100 ? '100+' : (hospitalCount ?? 0)}`,
-                  label: 'Hospitals listed',
+                  value: `${hospitalCount && hospitalCount >= 100 ? "100+" : (hospitalCount ?? 0)}`,
+                  label: "Hospitals listed",
                 },
-                { value: `${uniqueStates}`, label: 'States covered' },
-                { value: 'Free', label: 'Always free to use' },
+                { value: `${uniqueStates}`, label: "States covered" },
+                { value: "Free", label: "Always free to use" },
               ].map((s, i) => (
                 <div
                   key={s.label}
                   className="flex flex-col justify-center"
                   style={{
-                    paddingRight: '2rem',
-                    paddingLeft: i === 0 ? 0 : '2rem',
+                    paddingRight: "2rem",
+                    paddingLeft: i === 0 ? 0 : "2rem",
                     borderLeft:
-                      i > 0 ? '1px solid rgba(255,255,255,0.12)' : 'none',
+                      i > 0 ? "1px solid rgba(255,255,255,0.12)" : "none",
                   }}
                 >
                   <p
                     className="text-2xl font-bold text-white tabular-nums"
-                    style={{ fontFamily: 'Sora, sans-serif' }}
+                    style={{ fontFamily: "Sora, sans-serif" }}
                   >
                     {s.value}
                   </p>
                   <p
                     className="text-xs mt-0.5"
-                    style={{ color: 'rgba(255,255,255,0.5)' }}
+                    style={{ color: "rgba(255,255,255,0.5)" }}
                   >
                     {s.label}
                   </p>
@@ -216,15 +234,16 @@ export default async function LandingPage() {
 
       {/* Features */}
       <section
+        id="how"
         className="py-20 px-4 sm:px-6 border-t"
-        style={{ borderColor: 'var(--border)', background: 'var(--bg-soft)' }}
+        style={{ borderColor: "var(--border)", background: "var(--bg-soft)" }}
       >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-14">
             <p className="section-label mb-3">What you can do</p>
             <h2
               className="text-3xl font-bold"
-              style={{ fontFamily: 'Sora, sans-serif', color: 'var(--fg)' }}
+              style={{ fontFamily: "Sora, sans-serif", color: "var(--fg)" }}
             >
               Everything you need to find care
             </h2>
@@ -234,62 +253,62 @@ export default async function LandingPage() {
             {[
               {
                 icon: <Search size={22} />,
-                title: 'Search & Filter',
-                desc: 'Find hospitals by name, city, LGA, specialty, or ownership type.',
+                title: "Search & Filter",
+                desc: "Find hospitals by name, city, LGA, specialty, or ownership type.",
               },
               {
                 icon: <MapPin size={22} />,
-                title: 'Map View',
-                desc: 'See hospitals on an interactive map with radius-based search.',
+                title: "Map View",
+                desc: "See hospitals on an interactive map with radius-based search.",
               },
               {
                 icon: <Download size={22} />,
-                title: 'Export CSV',
-                desc: 'Download hospital lists as CSV with your chosen columns.',
+                title: "Export CSV",
+                desc: "Download hospital lists as CSV with your chosen columns.",
               },
               {
                 icon: <Share2 size={22} />,
-                title: 'Share Results',
-                desc: 'Copy a link or email a curated list to anyone.',
+                title: "Share Results",
+                desc: "Copy a link or email a curated list to anyone.",
               },
               {
                 icon: <Star size={22} />,
-                title: 'Ratings & Reviews',
-                desc: 'Read and leave reviews to help others find quality care.',
+                title: "Ratings & Reviews",
+                desc: "Read and leave reviews to help others find quality care.",
               },
               {
                 icon: <Clock size={22} />,
-                title: 'Visiting Hours',
-                desc: 'Check opening times and contact details before you go.',
+                title: "Visiting Hours",
+                desc: "Check opening times and contact details before you go.",
               },
               {
                 icon: <Shield size={22} />,
-                title: 'Verified Data',
-                desc: 'Entries created and moderated by trusted administrators.',
+                title: "Verified Data",
+                desc: "Entries created and moderated by trusted administrators.",
               },
               {
                 icon: <ArrowRight size={22} />,
-                title: 'Get Directions',
-                desc: 'One tap to open Google Maps directions to any hospital.',
+                title: "Get Directions",
+                desc: "One tap to open Google Maps directions to any hospital.",
               },
             ].map((f) => (
               <div key={f.title} className="card p-5 flex flex-col gap-3">
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center"
                   style={{
-                    background: 'var(--accent-subtle)',
-                    color: 'var(--accent)',
+                    background: "var(--accent-subtle)",
+                    color: "var(--accent)",
                   }}
                 >
                   {f.icon}
                 </div>
                 <p
                   className="font-semibold text-sm"
-                  style={{ fontFamily: 'Sora, sans-serif', color: 'var(--fg)' }}
+                  style={{ fontFamily: "Sora, sans-serif", color: "var(--fg)" }}
                 >
                   {f.title}
                 </p>
-                <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>
+                <p className="text-sm" style={{ color: "var(--fg-muted)" }}>
                   {f.desc}
                 </p>
               </div>
@@ -302,19 +321,19 @@ export default async function LandingPage() {
       <section
         id="about"
         className="py-20 px-4 sm:px-6 border-t"
-        style={{ borderColor: 'var(--border)', background: 'var(--bg-soft)' }}
+        style={{ borderColor: "var(--border)", background: "var(--bg-soft)" }}
       >
         <div className="max-w-3xl mx-auto text-center">
           <p className="section-label mb-3">Our mission</p>
           <h2
             className="text-3xl font-bold mb-5"
-            style={{ fontFamily: 'Sora, sans-serif', color: 'var(--fg)' }}
+            style={{ fontFamily: "Sora, sans-serif", color: "var(--fg)" }}
           >
             Making healthcare accessible to every Nigerian
           </h2>
           <p
             className="text-base leading-relaxed mb-8"
-            style={{ color: 'var(--fg-muted)' }}
+            style={{ color: "var(--fg-muted)" }}
           >
             Carefinder is a civic health tool that helps Nigerians find, export,
             and share hospital information. We address the access-to-healthcare
@@ -331,7 +350,7 @@ export default async function LandingPage() {
       {/* Footer */}
       <footer
         className="border-t py-8 px-4 sm:px-6"
-        style={{ background: 'var(--navy)', borderColor: '#1A2D42' }}
+        style={{ background: "var(--navy)", borderColor: "#1A2D42" }}
       >
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
@@ -344,33 +363,33 @@ export default async function LandingPage() {
             />
             <span
               className="text-sm font-bold"
-              style={{ fontFamily: 'Sora, sans-serif' }}
+              style={{ fontFamily: "Sora, sans-serif" }}
             >
               <span className="text-white">Care</span>
-              <span style={{ color: 'var(--accent-light)' }}>finder</span>
+              <span style={{ color: "var(--accent-light)" }}>finder</span>
             </span>
           </div>
           <div className="flex items-center gap-5">
             <Link
               href="/search"
               className="text-xs hover:opacity-75 transition-opacity"
-              style={{ color: 'rgba(255,255,255,0.5)' }}
+              style={{ color: "rgba(255,255,255,0.5)" }}
             >
               Find Hospitals
             </Link>
             <Link
               href="/admin/login"
               className="text-xs hover:opacity-75 transition-opacity"
-              style={{ color: 'rgba(255,255,255,0.5)' }}
+              style={{ color: "rgba(255,255,255,0.5)" }}
             >
               Admin Login
             </Link>
           </div>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
             © 2026 Carefinder · Built for Nigerians
           </p>
         </div>
       </footer>
     </div>
-  )
+  );
 }
