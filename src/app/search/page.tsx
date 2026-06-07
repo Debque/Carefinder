@@ -6,26 +6,14 @@ import { useSearchParams } from 'next/navigation'
 import { Map, List, Search as SearchIcon } from 'lucide-react'
 import { Navbar } from '@/components/shared/Navbar'
 import { SearchBar } from '@/components/search/SearchBar'
-const FilterPanel = dynamic(() =>
-  import('@/components/search/FilterPanel').then((m) => ({
-    default: m.FilterPanel,
-  }))
-)
 import { ResultsList } from '@/components/search/ResultsList'
-const ExportButton = dynamic(() =>
-  import('@/components/shared/ExportButton').then((m) => ({
-    default: m.ExportButton,
-  }))
-)
-const ShareButton = dynamic(() =>
-  import('@/components/shared/ShareButton').then((m) => ({
-    default: m.ShareButton,
-  }))
-)
 import { searchHospitals } from '@/lib/supabase/queries'
 import { decodeFilters } from '@/lib/share'
 import type { Hospital, SearchFilters } from '@/types'
 import dynamic from 'next/dynamic'
+import { ExportButton } from '@/components/shared/ExportButton'
+import { ShareButton } from '@/components/shared/ShareButton'
+import { FilterPanel } from '@/components/search/FilterPanel'
 
 const MapView = dynamic(
   () =>
@@ -81,7 +69,7 @@ function SearchPage() {
   }, [filters])
 
   useEffect(() => {
-    const t = setTimeout(runSearch, 300)
+    const t = setTimeout(runSearch, 600)
     return () => clearTimeout(t)
   }, [runSearch])
 
@@ -223,11 +211,7 @@ function SearchPage() {
           boxShadow: '0 -4px 20px rgba(13,27,42,0.08)',
         }}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-3">
-            <ExportButton hospitals={hospitals} query={filters.query} />
-            <ShareButton filters={filters} hospitals={hospitals} />
-          </div>
+        <div className="max-w-7xl mx-auto flex items-center justify-end">
           <p className="text-xs" style={{ color: 'var(--fg-subtle)' }}>
             {hospitals.length} results · Carefinder Nigeria
           </p>
