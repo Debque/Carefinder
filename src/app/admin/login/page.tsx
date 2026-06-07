@@ -1,12 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+
 import { Eye, EyeOff, LogIn } from 'lucide-react'
 import { getBrowserClient } from '@/lib/supabase/browser'
 
 export default function AdminLoginPage() {
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -26,7 +25,6 @@ export default function AdminLoginPage() {
 
     try {
       const supabase = getBrowserClient()
-      console.log('Attempting login...')
 
       const { data, error: authError } = await supabase.auth.signInWithPassword(
         {
@@ -35,26 +33,32 @@ export default function AdminLoginPage() {
         }
       )
 
-      console.log('Auth result:', { user: data?.user?.email, error: authError })
-
       if (authError) {
-        console.log('Auth error:', authError.message)
         setError('Invalid email or password')
         setLoading(false)
         return
       }
 
-      console.log('Login successful, redirecting to dashboard...')
-      // Small delay to ensure cookie is set before redirect
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      window.location.href = '/admin/dashboard'
+      // Verify the user is an admin before redirecting
+      const role =
+        data.user?.app_metadata?.role ?? data.user?.user_metadata?.role
+
+      if (role !== 'admin') {
+        setError('You do not have admin access')
+        await supabase.auth.signOut()
+        setLoading(false)
+        return
+      }
+
+      // Wait for session to be fully written before redirect
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      window.location.replace('/admin/dashboard')
     } catch (err) {
-      console.log('Caught error:', err)
+      console.error(err)
       setError('Something went wrong. Please try again.')
       setLoading(false)
     }
   }
-
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4"
