@@ -54,12 +54,15 @@ export default function LoginPage() {
       }
 
       const params = new URLSearchParams(window.location.search)
-      const redirect = params.get('redirect') ?? '/search'
+      const redirect = params.get('redirect') ?? '/'
       router.push(redirect)
     } else {
       const { error: authError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: 'https://carefinder-gamma.vercel.app/login',
+        },
       })
 
       if (authError) {
