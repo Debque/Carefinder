@@ -61,7 +61,7 @@ export default function LoginPage() {
         email,
         password,
         options: {
-          emailRedirectTo: 'https://carefinder-gamma.vercel.app/login',
+          emailRedirectTo: 'https://carefinder-gamma.vercel.app/confirmed',
         },
       })
 
