@@ -27,7 +27,7 @@ export function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
           style={{ fontFamily: 'Sora, sans-serif' }}
         >
           <span style={{ color: 'var(--fg)' }}>Care</span>
-          <span style={{ color: 'var(--accent)' }}>finder</span>
+          <span style={{ color: 'var(--accent)' }}>Finder</span>
         </span>
         {size !== 'sm' && (
           <span className="text-xs" style={{ color: 'var(--fg-subtle)' }}>

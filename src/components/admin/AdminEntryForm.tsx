@@ -90,6 +90,7 @@ export function AdminEntryForm({
     },
   })
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const selectedSpecialties = watch('specialties') ?? []
 
   const onSubmit = async (data: HospitalFormData) => {

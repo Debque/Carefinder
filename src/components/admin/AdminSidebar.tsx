@@ -10,6 +10,7 @@ import {
   Settings,
   LogOut,
   Globe,
+  UserPlus,
 } from 'lucide-react'
 import { createClient } from '@supabase/supabase-js'
 
@@ -17,6 +18,7 @@ const navItems = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/hospitals', label: 'Hospitals', icon: Hospital },
   { href: '/admin/reviews', label: 'Reviews', icon: Star },
+  { href: '/admin/invite', label: 'Invite Admin', icon: UserPlus },
   { href: '/admin/users', label: 'Users', icon: Users },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
   { href: '/', label: 'View Site', icon: Globe },
