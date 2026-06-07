@@ -12,7 +12,7 @@ import {
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/shared/ThemeToggle'
 import { createClient } from '@/lib/supabase/server'
-
+export const revalidate = 3600 // revalidate every hour
 export default async function LandingPage() {
   const supabase = await createClient()
 
