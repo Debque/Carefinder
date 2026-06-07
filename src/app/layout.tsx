@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { ThemeProvider } from '@/components/shared/ThemeProvider'
 import { Sora, DM_Sans } from 'next/font/google'
+import { ScrollToTop } from '@/components/shared/ScrollToTop'
 
 const sora = Sora({
   subsets: ['latin'],
@@ -31,6 +32,7 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
   },
 }
+
 export default function RootLayout({
   children,
 }: {
@@ -56,7 +58,10 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <ScrollToTop />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )
