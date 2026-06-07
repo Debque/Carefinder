@@ -85,16 +85,7 @@ export default async function LandingPage() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             {isLoggedIn ? (
-              <Link
-                href="/search"
-                className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border transition-all"
-                style={{
-                  borderColor: "var(--border)",
-                  color: "var(--fg-muted)",
-                }}
-              >
-                My Account
-              </Link>
+              <></>
             ) : (
               <Link
                 href="/login"
