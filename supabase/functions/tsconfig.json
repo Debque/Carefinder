@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": ["ESNext"],
+    "types": ["deno.ns"],
+    "strict": true,
+    "noImplicitAny": true
+  }
+}
