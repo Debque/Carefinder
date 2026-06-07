@@ -214,60 +214,6 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* How it works */}
-      <section
-        id="how"
-        className="py-16 px-4 sm:px-6 border-t"
-        style={{ borderColor: 'var(--border)' }}
-      >
-        <div className="max-w-4xl mx-auto text-center">
-          <p className="section-label mb-3">How it works</p>
-          <h2
-            className="text-3xl font-bold mb-12"
-            style={{ fontFamily: 'Sora, sans-serif', color: 'var(--fg)' }}
-          >
-            Find care in 3 simple steps
-          </h2>
-          <div className="grid sm:grid-cols-3 gap-8">
-            {[
-              {
-                step: '1',
-                title: 'Search',
-                desc: 'Find hospitals by name, city, LGA, or specialty across all 36 states.',
-              },
-              {
-                step: '2',
-                title: 'Compare',
-                desc: 'View ratings, specialties, ownership details and visiting hours.',
-              },
-              {
-                step: '3',
-                title: 'Visit',
-                desc: 'Call directly, get directions, export the list, or share with others.',
-              },
-            ].map((item) => (
-              <div key={item.step} className="flex flex-col items-center gap-3">
-                <div
-                  className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white"
-                  style={{ background: 'var(--accent)' }}
-                >
-                  {item.step}
-                </div>
-                <p
-                  className="font-bold text-base"
-                  style={{ fontFamily: 'Sora, sans-serif', color: 'var(--fg)' }}
-                >
-                  {item.title}
-                </p>
-                <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>
-                  {item.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Features */}
       <section
         className="py-20 px-4 sm:px-6 border-t"
@@ -347,49 +293,6 @@ export default async function LandingPage() {
                   {f.desc}
                 </p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Browse by specialty */}
-      <section
-        className="py-16 px-4 sm:px-6 border-t"
-        style={{ borderColor: 'var(--border)' }}
-      >
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="section-label mb-3">Browse by specialty</p>
-          <h2
-            className="text-2xl font-bold mb-8"
-            style={{ fontFamily: 'Sora, sans-serif', color: 'var(--fg)' }}
-          >
-            Find the right type of care
-          </h2>
-          <div className="flex flex-wrap justify-center gap-2">
-            {[
-              'Emergency',
-              'Maternity',
-              'Pediatrics',
-              'Dental',
-              'Cardiology',
-              'Surgery',
-              'Oncology',
-              'General',
-              'Neurology',
-              'Teaching',
-            ].map((s) => (
-              <Link
-                key={s}
-                href={`/search?specialty=${s}`}
-                className="px-4 py-2 rounded-full text-sm font-medium border transition-all"
-                style={{
-                  borderColor: 'var(--border)',
-                  color: 'var(--fg-muted)',
-                  background: 'var(--bg-card)',
-                }}
-              >
-                {s}
-              </Link>
             ))}
           </div>
         </div>
