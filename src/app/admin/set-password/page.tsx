@@ -18,15 +18,17 @@ function SetPasswordForm() {
   useEffect(() => {
     // Supabase puts the token in the URL hash — exchange it for a session
     const supabase = getBrowserClient()
-    supabase.auth.onAuthStateChange((event) => {
+    supabase.auth.onAuthStateChange((event: string) => {
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         setReady(true)
       }
     })
     // Also check if already have a session
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) setReady(true)
-    })
+    supabase.auth
+      .getSession()
+      .then(({ data }: { data: { session: unknown } }) => {
+        if (data.session) setReady(true)
+      })
   }, [searchParams])
 
   const handleSubmit = async () => {
