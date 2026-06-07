@@ -45,6 +45,8 @@ export default function AdminLoginPage() {
       }
 
       console.log('Login successful, redirecting to dashboard...')
+      // Small delay to ensure cookie is set before redirect
+      await new Promise((resolve) => setTimeout(resolve, 500))
       window.location.href = '/admin/dashboard'
     } catch (err) {
       console.log('Caught error:', err)
