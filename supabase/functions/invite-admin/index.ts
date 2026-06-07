@@ -74,7 +74,7 @@ serve(async (req) => {
     const { data, error: inviteError } =
       await adminClient.auth.admin.inviteUserByEmail(email, {
         data: { role: 'admin' },
-        redirectTo: `${Deno.env.get('SITE_URL')}/admin/login`,
+        redirectTo: 'https://carefinder-gamma.vercel.app/admin/set-password',
       })
 
     if (inviteError) {
