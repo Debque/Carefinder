@@ -1,13 +1,14 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Eye, EyeOff, LogIn, UserPlus } from 'lucide-react'
 import { getBrowserClient } from '@/lib/supabase/browser'
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [mode, setMode] = useState<'login' | 'signup'>('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -15,8 +16,11 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
 
+  const resetSuccess = searchParams.get('reset') === 'success'
+  const [success, setSuccess] = useState(
+    resetSuccess ? 'Password reset successfully. You can now log in.' : ''
+  )
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -71,7 +75,9 @@ export default function LoginPage() {
         return
       }
 
-      setSuccess('Account created! Check your email to confirm, then log in.')
+      setSuccess(
+        'Almost there! Check your email and click the confirmation link to activate your account.'
+      )
       setMode('login')
     }
 
@@ -176,18 +182,29 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label
-                className="block text-xs font-semibold mb-1.5"
-                style={{ color: 'var(--fg-muted)' }}
-              >
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label
+                  className="block text-xs font-semibold"
+                  style={{ color: 'var(--fg-muted)' }}
+                >
+                  Password
+                </label>
+                {mode === 'login' && (
+                  <Link
+                    href="/forgot-password"
+                    className="text-xs hover:opacity-75 transition-opacity"
+                    style={{ color: 'var(--accent)' }}
+                  >
+                    Forgot password?
+                  </Link>
+                )}
+              </div>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Atleast 6 characters"
+                  placeholder="At least 6 characters"
                   className="input-base pr-10"
                   aria-label="Password"
                   autoComplete={
@@ -306,11 +323,26 @@ export default function LoginPage() {
           className="text-center text-xs mt-4"
           style={{ color: 'var(--fg-subtle)' }}
         >
-          <Link href="/search" style={{ color: 'var(--accent)' }}>
+          <Link href="/" style={{ color: 'var(--accent)' }}>
             ← Back to Home
           </Link>
         </p>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div
+          className="min-h-screen"
+          style={{ background: 'var(--bg-soft)' }}
+        />
+      }
+    >
+      <LoginForm />
+    </Suspense>
   )
 }
