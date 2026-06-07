@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Eye, EyeOff, KeyRound } from 'lucide-react'
 import { getBrowserClient } from '@/lib/supabase/browser'
+import type { AuthChangeEvent } from '@supabase/supabase-js'
 
 function SetPasswordForm() {
   const router = useRouter()
@@ -18,7 +19,7 @@ function SetPasswordForm() {
   useEffect(() => {
     // Supabase puts the token in the URL hash — exchange it for a session
     const supabase = getBrowserClient()
-    supabase.auth.onAuthStateChange((event: string) => {
+    supabase.auth.onAuthStateChange((event: AuthChangeEvent) => {
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         setReady(true)
       }

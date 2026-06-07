@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff, KeyRound } from 'lucide-react'
 import { getBrowserClient } from '@/lib/supabase/browser'
+import type { AuthChangeEvent } from '@supabase/supabase-js'
 
 function ResetPasswordForm() {
   const router = useRouter()
@@ -16,7 +17,7 @@ function ResetPasswordForm() {
 
   useEffect(() => {
     const supabase = getBrowserClient()
-    supabase.auth.onAuthStateChange((event: string) => {
+    supabase.auth.onAuthStateChange((event: AuthChangeEvent) => {
       if (event === 'PASSWORD_RECOVERY') {
         setReady(true)
       }
