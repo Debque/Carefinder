@@ -1,6 +1,21 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { ThemeProvider } from '@/components/shared/ThemeProvider'
+import { Sora, DM_Sans } from 'next/font/google'
+
+const sora = Sora({
+  subsets: ['latin'],
+  weight: ['700', '800'],
+  variable: '--font-sora',
+  display: 'swap',
+})
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-dm-sans',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: "Carefinder — Nigeria's Hospital Directory",
@@ -22,15 +37,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${sora.variable} ${dmSans.variable}`}
+    >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link
           rel="icon"
