@@ -56,6 +56,7 @@ export function ResultsList({
   const handleSortChange = (s: SearchFilters['sortBy']) => {
     setPage(1)
     onSortChange(s)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
@@ -138,7 +139,10 @@ export function ResultsList({
 
               <div className="flex items-center gap-1">
                 <button
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  onClick={() => {
+                    setPage((p) => Math.max(1, p - 1))
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
                   disabled={page === 1}
                   className="flex items-center justify-center w-8 h-8 rounded-lg border transition-all disabled:opacity-40"
                   style={{
@@ -184,7 +188,10 @@ export function ResultsList({
                     result.push(
                       <button
                         key={p}
-                        onClick={() => setPage(p)}
+                        onClick={() => {
+                          setPage(p)
+                          window.scrollTo({ top: 0, behavior: 'smooth' })
+                        }}
                         className="flex items-center justify-center w-8 h-8 rounded-lg border text-xs font-semibold transition-all"
                         style={{
                           borderColor:
@@ -205,7 +212,10 @@ export function ResultsList({
                 })()}
 
                 <button
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  onClick={() => {
+                    setPage((p) => Math.min(totalPages, p + 1))
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
                   disabled={page === totalPages}
                   className="flex items-center justify-center w-8 h-8 rounded-lg border transition-all disabled:opacity-40"
                   style={{
