@@ -16,7 +16,7 @@ function ResetPasswordForm() {
 
   useEffect(() => {
     const supabase = getBrowserClient()
-    supabase.auth.onAuthStateChange((event) => {
+    supabase.auth.onAuthStateChange((event: string) => {
       if (event === 'PASSWORD_RECOVERY') {
         setReady(true)
       }
