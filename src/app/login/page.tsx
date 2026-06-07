@@ -304,7 +304,7 @@ export default function LoginPage() {
           style={{ color: 'var(--fg-subtle)' }}
         >
           <Link href="/search" style={{ color: 'var(--accent)' }}>
-            ← Back to search
+            ← Back to Home
           </Link>
         </p>
       </div>
