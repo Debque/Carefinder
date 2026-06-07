@@ -74,6 +74,7 @@ export function AdminEntryForm({
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
+  const [uploadingImage, setUploadingImage] = useState(false)
 
   const {
     register,
@@ -133,6 +134,44 @@ export function AdminEntryForm({
     }
 
     router.push('/admin/hospitals')
+    router.refresh()
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? [])
+    if (!files.length || !hospitalId) return
+
+    setUploadingImage(true)
+    setSaveError('')
+
+    const supabase = getBrowserClient()
+
+    for (const file of files) {
+      const ext = file.name.split('.').pop()
+      const path = `${hospitalId}/${Date.now()}.${ext}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('hospital-images')
+        .upload(path, file, { upsert: true })
+
+      if (uploadError) {
+        setSaveError(`Image upload failed: ${uploadError.message}`)
+        setUploadingImage(false)
+        return
+      }
+
+      const { data: urlData } = supabase.storage
+        .from('hospital-images')
+        .getPublicUrl(path)
+
+      await supabase.from('hospital_images').insert({
+        hospital_id: hospitalId,
+        url: urlData.publicUrl,
+        alt: file.name.replace(/\.[^.]+$/, ''),
+      } as never)
+    }
+
+    setUploadingImage(false)
     router.refresh()
   }
 
@@ -402,6 +441,69 @@ export function AdminEntryForm({
           rows={6}
           placeholder="## About&#10;&#10;Write a description of the hospital using Markdown..."
         />
+      </div>
+
+      {/* Images */}
+      <div
+        className="rounded-2xl border p-5"
+        style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}
+      >
+        <p className="section-label mb-2">Hospital Images</p>
+        <p className="text-xs mb-4" style={{ color: 'var(--fg-muted)' }}>
+          Upload photos of the hospital facility. First image will be used as
+          the cover.
+        </p>
+
+        {!hospitalId ? (
+          <div
+            className="rounded-xl border-2 border-dashed py-6 px-4 text-center"
+            style={{ borderColor: 'var(--border)' }}
+          >
+            <p className="text-sm" style={{ color: 'var(--fg-subtle)' }}>
+              Save the hospital first before uploading images.
+            </p>
+          </div>
+        ) : (
+          <label
+            className="flex flex-col items-center justify-center w-full rounded-xl border-2 border-dashed cursor-pointer transition-all py-8 px-4"
+            style={{
+              borderColor: uploadingImage ? 'var(--accent)' : 'var(--border)',
+              background: 'var(--bg-soft)',
+            }}
+          >
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              className="mb-3"
+            >
+              <path
+                d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
+                stroke="var(--fg-subtle)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <p className="text-sm font-medium" style={{ color: 'var(--fg)' }}>
+              {uploadingImage
+                ? 'Uploading...'
+                : 'Click to upload or drag and drop'}
+            </p>
+            <p className="text-xs mt-1" style={{ color: 'var(--fg-subtle)' }}>
+              PNG, JPG up to 5MB each · Multiple files allowed
+            </p>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              disabled={uploadingImage}
+              onChange={handleImageUpload}
+            />
+          </label>
+        )}
       </div>
 
       {/* Error */}

@@ -6,10 +6,22 @@ import { useSearchParams } from 'next/navigation'
 import { Map, List, Search as SearchIcon } from 'lucide-react'
 import { Navbar } from '@/components/shared/Navbar'
 import { SearchBar } from '@/components/search/SearchBar'
-import { FilterPanel } from '@/components/search/FilterPanel'
+const FilterPanel = dynamic(() =>
+  import('@/components/search/FilterPanel').then((m) => ({
+    default: m.FilterPanel,
+  }))
+)
 import { ResultsList } from '@/components/search/ResultsList'
-import { ExportButton } from '@/components/shared/ExportButton'
-import { ShareButton } from '@/components/shared/ShareButton'
+const ExportButton = dynamic(() =>
+  import('@/components/shared/ExportButton').then((m) => ({
+    default: m.ExportButton,
+  }))
+)
+const ShareButton = dynamic(() =>
+  import('@/components/shared/ShareButton').then((m) => ({
+    default: m.ShareButton,
+  }))
+)
 import { searchHospitals } from '@/lib/supabase/queries'
 import { decodeFilters } from '@/lib/share'
 import type { Hospital, SearchFilters } from '@/types'
