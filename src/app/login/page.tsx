@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [mode, setMode] = useState<'login' | 'signup'>('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -26,6 +27,11 @@ export default function LoginPage() {
 
     if (password.length < 6) {
       setError('Password must be at least 6 characters')
+      return
+    }
+
+    if (mode === 'signup' && password !== confirm) {
+      setError('Passwords do not match')
       return
     }
 
@@ -125,6 +131,7 @@ export default function LoginPage() {
                 setMode(m)
                 setError('')
                 setSuccess('')
+                setConfirm('')
               }}
               className="flex-1 py-2.5 text-sm font-semibold capitalize transition-colors"
               style={{
@@ -177,7 +184,7 @@ export default function LoginPage() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder="Atleast 6 characters"
                   className="input-base pr-10"
                   aria-label="Password"
                   autoComplete={
@@ -198,6 +205,34 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
+
+            {/* Confirm password — only shown on signup */}
+            {mode === 'signup' && (
+              <div>
+                <label
+                  className="block text-xs font-semibold mb-1.5"
+                  style={{ color: 'var(--fg-muted)' }}
+                >
+                  Confirm password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={confirm}
+                    onChange={(e) => setConfirm(e.target.value)}
+                    placeholder="Re-enter your password"
+                    className="input-base pr-10"
+                    aria-label="Confirm password"
+                    autoComplete="new-password"
+                  />
+                  {confirm && (
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs">
+                      {confirm === password ? '✅' : '❌'}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
 
             {error && (
               <p
