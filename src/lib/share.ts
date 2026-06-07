@@ -9,7 +9,7 @@ export function encodeFilters(filters: Partial<SearchFilters>): string {
     params.set('ownership', filters.ownership)
   if (filters.radius && filters.radius !== 25)
     params.set('radius', String(filters.radius))
-  if (filters.sortBy && filters.sortBy !== 'distance')
+  if (filters.sortBy && filters.sortBy !== 'rating')
     params.set('sort', filters.sortBy)
   return params.toString()
 }
@@ -22,7 +22,7 @@ export function decodeFilters(search: string): Partial<SearchFilters> {
     specialty: params.get('specialty') ?? '',
     ownership: (params.get('ownership') as SearchFilters['ownership']) ?? 'all',
     radius: Number(params.get('radius') ?? 25),
-    sortBy: (params.get('sort') as SearchFilters['sortBy']) ?? 'distance',
+    sortBy: (params.get('sort') as SearchFilters['sortBy']) ?? 'rating',
   }
 }
 
