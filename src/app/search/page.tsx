@@ -43,7 +43,7 @@ const DEFAULT_FILTERS: SearchFilters = {
   specialty: '',
   ownership: 'all',
   radius: 25,
-  sortBy: 'distance',
+  sortBy: 'rating',
 }
 
 function SearchPage() {

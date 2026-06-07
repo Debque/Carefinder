@@ -27,9 +27,11 @@ export async function searchHospitals(
   if (filters.sortBy === 'name') {
     query = query.order('name', { ascending: true })
   } else if (filters.sortBy === 'rating') {
-    query = query.order('rating_avg', { ascending: false })
+    query = query.order('rating_avg', { ascending: false, nullsFirst: false })
+  } else if (filters.sortBy === 'distance') {
+    query = query.order('name', { ascending: true }) // fallback since distance needs user coords
   } else {
-    query = query.order('name', { ascending: true })
+    query = query.order('rating_avg', { ascending: false, nullsFirst: false })
   }
 
   query = query.limit(200)

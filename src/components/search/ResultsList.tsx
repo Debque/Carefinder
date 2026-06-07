@@ -91,9 +91,9 @@ export function ResultsList({
             }}
             aria-label="Sort results"
           >
-            <option value="distance">Distance</option>
-            <option value="name">Name</option>
             <option value="rating">Rating</option>
+            <option value="name">Name</option>
+            <option value="distance">Distance</option>
           </select>
         </div>
       </div>
