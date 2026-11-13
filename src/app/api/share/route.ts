@@ -1,28 +1,59 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { Resend } from 'resend'
+import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Turn characters that mean something in HTML into harmless text,
+// so a hospital name like "<script>" is shown, not run.
+function escapeHtml(value: string): string {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// True only if `url` is a valid link on the same site the request came from
+function isSameSiteUrl(url: unknown, siteOrigin: string): boolean {
+  if (typeof url !== "string") {
+    return false;
+  }
+  try {
+    return new URL(url).origin === siteOrigin;
+  } catch {
+    return false;
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const { to, hospitals, shareUrl } = await request.json()
+    const { to, hospitals, shareUrl } = await request.json();
 
     if (!to || !hospitals?.length) {
       return NextResponse.json(
-        { error: 'Recipient email and hospitals are required' },
-        { status: 400 }
-      )
+        { error: "Recipient email and hospitals are required" },
+        { status: 400 },
+      );
+    }
+
+    // Only allow links back to this same site, so the email can't point people elsewhere
+    if (!isSameSiteUrl(shareUrl, request.nextUrl.origin)) {
+      return NextResponse.json(
+        { error: "Invalid share link" },
+        { status: 400 },
+      );
     }
 
     const hospitalList = hospitals
       .map(
         (h: { name: string; city: string; ownership: string }) =>
-          `<li><strong>${h.name}</strong> — ${h.city} (${h.ownership})</li>`
+          `<li><strong>${escapeHtml(h.name)}</strong> — ${escapeHtml(h.city)} (${escapeHtml(h.ownership)})</li>`,
       )
-      .join('')
+      .join("");
 
     const { data, error } = await resend.emails.send({
-      from: 'Carefinder <onboarding@resend.dev>',
+      from: "Carefinder <onboarding@resend.dev>",
       to: [to],
       subject: `Hospital list shared via Carefinder`,
       html: `
@@ -40,7 +71,7 @@ export async function POST(request: NextRequest) {
             </ul>
 
             
-             <a href="${shareUrl}"
+                         <a href="${escapeHtml(shareUrl)}"
               style="display: inline-block; background: #5B50F0; color: white; padding: 12px 24px; border-radius: 999px; text-decoration: none; font-weight: 600; margin-top: 16px;"
             >
               View full list on Carefinder
@@ -52,20 +83,23 @@ export async function POST(request: NextRequest) {
           </div>
         </div>
       `,
-    })
+    });
 
     if (error) {
-      if (error.name === 'rate_limit_exceeded') {
+      if (error.name === "rate_limit_exceeded") {
         return NextResponse.json(
-          { error: 'Too many emails sent. Please try again later.' },
-          { status: 429 }
-        )
+          { error: "Too many emails sent. Please try again later." },
+          { status: 429 },
+        );
       }
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, id: data?.id })
+    return NextResponse.json({ success: true, id: data?.id });
   } catch {
-    return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
+    return NextResponse.json(
+      { error: "Failed to send email" },
+      { status: 500 },
+    );
   }
 }
