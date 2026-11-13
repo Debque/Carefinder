@@ -1,69 +1,69 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
+import { useState } from "react";
 
-import { Eye, EyeOff, LogIn } from 'lucide-react'
-import { getBrowserClient } from '@/lib/supabase/browser'
+import { Eye, EyeOff, LogIn } from "lucide-react";
+import { getBrowserClient } from "@/lib/supabase/browser";
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!email || !password) {
-      setError('Please enter your email and password')
-      return
+      setError("Please enter your email and password");
+      return;
     }
 
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError("");
 
     try {
-      const supabase = getBrowserClient()
+      const supabase = getBrowserClient();
 
       const { data, error: authError } = await supabase.auth.signInWithPassword(
         {
           email,
           password,
-        }
-      )
+        },
+      );
 
       if (authError) {
-        setError('Invalid email or password')
-        setLoading(false)
-        return
+        setError("Invalid email or password");
+        setLoading(false);
+        return;
       }
 
       // Verify the user is an admin before redirecting
-      const role =
-        data.user?.app_metadata?.role ?? data.user?.user_metadata?.role
+      // Only trust app_metadata: users can edit their own user_metadata
+      const role = data.user?.app_metadata?.role;
 
-      if (role !== 'admin') {
-        setError('You do not have admin access')
-        await supabase.auth.signOut()
-        setLoading(false)
-        return
+      if (role !== "admin") {
+        setError("You do not have admin access");
+        await supabase.auth.signOut();
+        setLoading(false);
+        return;
       }
 
       // Wait for session to be fully written before redirect
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      window.location.replace('/admin/dashboard')
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      window.location.replace("/admin/dashboard");
     } catch (err) {
-      console.error(err)
-      setError('Something went wrong. Please try again.')
-      setLoading(false)
+      console.error(err);
+      setError("Something went wrong. Please try again.");
+      setLoading(false);
     }
-  }
+  };
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4"
       style={{
-        background: 'linear-gradient(135deg, #0D1B2A 0%, #1A2D42 100%)',
+        background: "linear-gradient(135deg, #0D1B2A 0%, #1A2D42 100%)",
       }}
     >
       <div className="w-full max-w-sm">
@@ -72,8 +72,8 @@ export default function AdminLoginPage() {
           <div
             className="inline-flex items-center justify-center w-12 h-12 rounded-2xl mb-4"
             style={{
-              background: 'var(--accent)',
-              boxShadow: '0 4px 20px rgba(91,80,240,0.4)',
+              background: "var(--accent)",
+              boxShadow: "0 4px 20px rgba(91,80,240,0.4)",
             }}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -92,13 +92,13 @@ export default function AdminLoginPage() {
           </div>
           <h1
             className="text-2xl font-bold text-white"
-            style={{ fontFamily: 'Sora, sans-serif' }}
+            style={{ fontFamily: "Sora, sans-serif" }}
           >
             Admin Login
           </h1>
           <p
             className="text-sm mt-1"
-            style={{ color: 'rgba(255,255,255,0.5)' }}
+            style={{ color: "rgba(255,255,255,0.5)" }}
           >
             Carefinder Admin Dashboard
           </p>
@@ -108,16 +108,16 @@ export default function AdminLoginPage() {
         <div
           className="rounded-2xl p-6"
           style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            boxShadow: 'var(--shadow-lg)',
+            background: "var(--bg-card)",
+            border: "1px solid var(--border)",
+            boxShadow: "var(--shadow-lg)",
           }}
         >
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
               <label
                 className="block text-xs font-semibold mb-1.5"
-                style={{ color: 'var(--fg-muted)' }}
+                style={{ color: "var(--fg-muted)" }}
               >
                 Email address
               </label>
@@ -135,13 +135,13 @@ export default function AdminLoginPage() {
             <div>
               <label
                 className="block text-xs font-semibold mb-1.5"
-                style={{ color: 'var(--fg-muted)' }}
+                style={{ color: "var(--fg-muted)" }}
               >
                 Password
               </label>
               <div className="relative">
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
@@ -153,12 +153,12 @@ export default function AdminLoginPage() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
-                    <EyeOff size={16} style={{ color: 'var(--fg-subtle)' }} />
+                    <EyeOff size={16} style={{ color: "var(--fg-subtle)" }} />
                   ) : (
-                    <Eye size={16} style={{ color: 'var(--fg-subtle)' }} />
+                    <Eye size={16} style={{ color: "var(--fg-subtle)" }} />
                   )}
                 </button>
               </div>
@@ -167,7 +167,7 @@ export default function AdminLoginPage() {
             {error && (
               <p
                 className="text-xs px-3 py-2 rounded-lg"
-                style={{ background: '#FEE2E2', color: '#DC2626' }}
+                style={{ background: "#FEE2E2", color: "#DC2626" }}
                 role="alert"
               >
                 {error}
@@ -217,11 +217,11 @@ export default function AdminLoginPage() {
 
         <p
           className="text-center text-xs mt-4"
-          style={{ color: 'rgba(255,255,255,0.3)' }}
+          style={{ color: "rgba(255,255,255,0.3)" }}
         >
           Admin access only · Public users don&apos;t need an account to search
         </p>
       </div>
     </div>
-  )
+  );
 }
